@@ -52,7 +52,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Room\ChatRoom.cs" />
-    <Compile Include="User\Exeception.cs" />
     <Compile Include="User\User.cs" />
   </ItemGroup>
   <ItemGroup>

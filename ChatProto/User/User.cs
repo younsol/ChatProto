@@ -28,6 +28,12 @@ namespace ChatProto
 
         protected override void OnClose()
         {
+            foreach (var pair in JoinedChatRooms)
+            {
+                ChatRoom.Unsubscribe(this, pair.Key);
+            }
+            JoinedChatRooms.Clear();
+
             User user;
             if (!SessionContainer.TryRemove(Index ?? 0, out user) || this != user)
             {
