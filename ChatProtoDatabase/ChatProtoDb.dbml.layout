@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.625" name="ChatProtoDb">
+  <DataContextMoniker Name="/ChatProtoDbDataContext" />
+  <nestedChildShapes>
+    <classShape Id="6c56fd6e-34e5-4453-b1be-a79304530381" absoluteBounds="3.5, 0.75, 2, 1.7708968098958331">
+      <DataClassMoniker Name="/ChatProtoDbDataContext/Chat" />
+      <nestedChildShapes>
+        <elementListCompartment Id="8c2e4dbc-aaba-4ad4-9114-008acd50ddb4" absoluteBounds="3.515, 1.21, 1.9700000000000002, 1.2108968098958333" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="55077b9e-1fd8-452a-aab2-42929ee289f5" absoluteBounds="0.75, 7, 2, 1.3862939453125014">
+      <DataClassMoniker Name="/ChatProtoDbDataContext/User" />
+      <nestedChildShapes>
+        <elementListCompartment Id="741eaa3b-e49a-49eb-ba96-139de7e71f43" absoluteBounds="0.765, 7.46, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="3cf6316a-be1f-4bab-848b-e7b740f1ee87" absoluteBounds="0.75, 4, 2, 1.1939925130208335">
+      <DataClassMoniker Name="/ChatProtoDbDataContext/ChatRoom" />
+      <nestedChildShapes>
+        <elementListCompartment Id="04f681dc-9d56-43b3-a702-3d1b16ca83cb" absoluteBounds="0.765, 4.46, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="f22689d2-04dc-44d9-a360-ca4e112acd87" absoluteBounds="3.5, 4, 2, 1.1939925130208335">
+      <DataClassMoniker Name="/ChatProtoDbDataContext/ChatRoomUser" />
+      <nestedChildShapes>
+        <elementListCompartment Id="700d2f8f-9ccb-4016-bb00-c863dbcfa918" absoluteBounds="3.515, 4.46, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(2.75 : 7); (3.125 : 6.625); (3.125 : 1.63544840494792); (3.5 : 1.63544840494792)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+      <AssociationMoniker Name="/ChatProtoDbDataContext/User/User_Chat" />
+      <nodes>
+        <classShapeMoniker Id="55077b9e-1fd8-452a-aab2-42929ee289f5" />
+        <classShapeMoniker Id="6c56fd6e-34e5-4453-b1be-a79304530381" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(1.75 : 4); (1.75 : 2.10942510742187); (3.04166666666667 : 2.10942510742187 : JumpStart); (3.20833333333333 : 2.10942510742187 : JumpEnd); (3.5 : 2.10942510742187)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+      <AssociationMoniker Name="/ChatProtoDbDataContext/ChatRoom/ChatRoom_Chat" />
+      <nodes>
+        <classShapeMoniker Id="3cf6316a-be1f-4bab-848b-e7b740f1ee87" />
+        <classShapeMoniker Id="6c56fd6e-34e5-4453-b1be-a79304530381" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(2.75 : 4.59699625651042); (3.04166666666667 : 4.59699625651042 : JumpStart); (3.20833333333333 : 4.59699625651042 : JumpEnd); (3.5 : 4.59699625651042)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+      <AssociationMoniker Name="/ChatProtoDbDataContext/ChatRoom/ChatRoom_ChatRoomUser" />
+      <nodes>
+        <classShapeMoniker Id="3cf6316a-be1f-4bab-848b-e7b740f1ee87" />
+        <classShapeMoniker Id="f22689d2-04dc-44d9-a360-ca4e112acd87" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(2.75 : 7.72439947265625); (4.5 : 7.72439947265625); (4.5 : 5.19399251302083)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+      <AssociationMoniker Name="/ChatProtoDbDataContext/User/User_ChatRoomUser" />
+      <nodes>
+        <classShapeMoniker Id="55077b9e-1fd8-452a-aab2-42929ee289f5" />
+        <classShapeMoniker Id="f22689d2-04dc-44d9-a360-ca4e112acd87" />
+      </nodes>
+    </associationConnector>
+  </nestedChildShapes>
+</ordesignerObjectsDiagram>

@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="ChatProtoDb" Class="ChatProtoDbDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="AppSettings" ConnectionString="Data Source=GT15767-I1;Initial Catalog=ChatProtoDb;Persist Security Info=True;User ID=sa" SettingsObjectName="ChatProtoDatabase.Properties.Settings" SettingsPropertyName="ChatProtoDbConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.Chat" Member="Chat">
+    <Type Name="Chat">
+      <Column Name="ChatId" Type="System.Int64" DbType="BigInt NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ChatRoomId" Type="System.Int64" DbType="BigInt NOT NULL" CanBeNull="false" />
+      <Column Name="UserId" Type="System.Int64" DbType="BigInt NOT NULL" CanBeNull="false" />
+      <Column Name="ChatText" Type="System.String" DbType="Text NOT NULL" CanBeNull="false" UpdateCheck="Never" />
+      <Column Name="ChatTime" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Association Name="User_Chat" Member="User" ThisKey="UserId" OtherKey="UserId" Type="User" IsForeignKey="true" />
+      <Association Name="ChatRoom_Chat" Member="ChatRoom" ThisKey="ChatRoomId" OtherKey="ChatRoomId" Type="ChatRoom" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.[User]" Member="User">
+    <Type Name="User">
+      <Column Name="UserId" Type="System.Int64" DbType="BigInt NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Nickname" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="Password" Type="System.String" DbType="NVarChar(256) NOT NULL" CanBeNull="false" />
+      <Association Name="User_Chat" Member="Chat" ThisKey="UserId" OtherKey="UserId" Type="Chat" />
+      <Association Name="User_ChatRoomUser" Member="ChatRoomUser" ThisKey="UserId" OtherKey="UserId" Type="ChatRoomUser" />
+    </Type>
+  </Table>
+  <Table Name="dbo.ChatRoom" Member="ChatRoom">
+    <Type Name="ChatRoom">
+      <Column Name="ChatRoomId" Type="System.Int64" DbType="BigInt NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(200)" CanBeNull="true" />
+      <Association Name="ChatRoom_Chat" Member="Chat" ThisKey="ChatRoomId" OtherKey="ChatRoomId" Type="Chat" />
+      <Association Name="ChatRoom_ChatRoomUser" Member="ChatRoomUser" ThisKey="ChatRoomId" OtherKey="ChatRoomId" Type="ChatRoomUser" />
+    </Type>
+  </Table>
+  <Table Name="dbo.ChatRoomUser" Member="ChatRoomUser">
+    <Type Name="ChatRoomUser">
+      <Column Name="ChatRoomId" Type="System.Int64" DbType="BigInt NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="UserId" Type="System.Int64" DbType="BigInt NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Association Name="ChatRoom_ChatRoomUser" Member="ChatRoom" ThisKey="ChatRoomId" OtherKey="ChatRoomId" Type="ChatRoom" IsForeignKey="true" />
+      <Association Name="User_ChatRoomUser" Member="User" ThisKey="UserId" OtherKey="UserId" Type="User" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Function Name="dbo.UserInquiry" Method="UserInquiry">
+    <Parameter Name="Nickname" Parameter="nickname" Type="System.String" DbType="NVarChar(50)" />
+    <Parameter Name="Password" Parameter="password" Type="System.String" DbType="NVarChar(256)" />
+    <ElementType Name="UserInquiryResult">
+      <Column Name="UserId" Type="System.Int64" DbType="BigInt NOT NULL" CanBeNull="false" />
+      <Column Name="Nickname" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.ChatInquiry" Method="ChatInquiry">
+    <Parameter Name="ChatRoomId" Parameter="chatRoomId" Type="System.Int64" DbType="BigInt" />
+    <Parameter Name="LatestChatId" Parameter="latestChatId" Type="System.Int64" DbType="BigInt" />
+    <Parameter Name="Count" Parameter="count" Type="System.Int32" DbType="Int" />
+    <ElementType Name="ChatInquiryResult">
+      <Column Name="ChatId" Type="System.Int64" DbType="BigInt NOT NULL" CanBeNull="false" />
+      <Column Name="ChatRoomId" Type="System.Int64" DbType="BigInt NOT NULL" CanBeNull="false" />
+      <Column Name="UserId" Type="System.Int64" DbType="BigInt NOT NULL" CanBeNull="false" />
+      <Column Name="ChatText" Type="System.String" DbType="Text NOT NULL" CanBeNull="false" UpdateCheck="Never" />
+      <Column Name="ChatTime" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.ChatRoomCreate" Method="ChatRoomCreate">
+    <Parameter Name="UserId" Parameter="userId" Type="System.Int64" DbType="BigInt" />
+    <Parameter Name="Title" Parameter="title" Type="System.String" DbType="NVarChar(200)" />
+    <ElementType Name="ChatRoomCreateResult">
+      <Column Name="ChatroomId" Type="System.Int64" DbType="BigInt NOT NULL" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(200)" CanBeNull="true" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.ChatRoomJoin" Method="ChatRoomJoin">
+    <Parameter Name="ChatRoomId" Parameter="chatRoomId" Type="System.Int64" DbType="BigInt" />
+    <Parameter Name="UserId" Parameter="userId" Type="System.Int64" DbType="BigInt" />
+    <ElementType Name="ChatRoomJoinResult">
+      <Column Name="Result" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.ChatRoomLeave" Method="ChatRoomLeave">
+    <Parameter Name="ChatRoomId" Parameter="chatRoomId" Type="System.Int64" DbType="BigInt" />
+    <Parameter Name="UserId" Parameter="userId" Type="System.Int64" DbType="BigInt" />
+    <ElementType Name="ChatRoomLeaveResult">
+      <Column Name="RemainUserCount" Type="System.Int32" DbType="Int" CanBeNull="true" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.UserCreate" Method="UserCreate">
+    <Parameter Name="Nickname" Parameter="nickname" Type="System.String" DbType="NVarChar(50)" />
+    <Parameter Name="Password" Parameter="password" Type="System.String" DbType="NVarChar(256)" />
+    <ElementType Name="UserCreateResult">
+      <Column Name="UserId" Type="System.Int64" DbType="BigInt NOT NULL" CanBeNull="false" />
+      <Column Name="Nickname" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.UserDelete" Method="UserDelete">
+    <Parameter Name="UserId" Parameter="userId" Type="System.Int64" DbType="BigInt" />
+    <ElementType Name="UserDeleteResult">
+      <Column Name="Result" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.ChatRoomListInquiry" Method="ChatRoomListInquiry">
+    <ElementType Name="ChatRoomListInquiryResult">
+      <Column Name="ChatRoomId" Type="System.Int64" DbType="BigInt NOT NULL" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(200)" CanBeNull="true" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.UserChatRoomListInquiry" Method="UserChatRoomListInquiry">
+    <Parameter Name="UserId" Parameter="userId" Type="System.Int64" DbType="BigInt" />
+    <ElementType Name="UserChatRoomListInquiryResult">
+      <Column Name="ChatRoomId" Type="System.Int64" DbType="BigInt NOT NULL" CanBeNull="false" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.ChatRoomInquiry" Method="ChatRoomInquiry">
+    <Parameter Name="ChatRoomId" Parameter="chatRoomId" Type="System.Int64" DbType="BigInt" />
+    <ElementType Name="ChatRoomInquiryResult">
+      <Column Name="ChatRoomId" Type="System.Int64" DbType="BigInt NOT NULL" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(200)" CanBeNull="true" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.ChatRoomUserInquiry" Method="ChatRoomUserInquiry">
+    <Parameter Name="ChatRoomId" Parameter="chatRoomId" Type="System.Int64" DbType="BigInt" />
+    <ElementType Name="ChatRoomUserInquiryResult">
+      <Column Name="UserId" Type="System.Int64" DbType="BigInt NOT NULL" CanBeNull="false" />
+      <Column Name="Nickname" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.ChatCreate" Method="ChatCreate">
+    <Parameter Name="ChatRoomId" Parameter="chatRoomId" Type="System.Int64" DbType="BigInt" />
+    <Parameter Name="UserId" Parameter="userId" Type="System.Int64" DbType="BigInt" />
+    <Parameter Name="ChatText" Parameter="chatText" Type="System.String" DbType="Text" />
+    <ElementType Name="ChatCreateResult">
+      <Column Name="ChatId" Type="System.Int64" DbType="BigInt NOT NULL" CanBeNull="false" />
+      <Column Name="ChatRoomId" Type="System.Int64" DbType="BigInt NOT NULL" CanBeNull="false" />
+      <Column Name="UserId" Type="System.Int64" DbType="BigInt NOT NULL" CanBeNull="false" />
+      <Column Name="ChatText" Type="System.String" DbType="Text NOT NULL" CanBeNull="false" UpdateCheck="Never" />
+      <Column Name="ChatTime" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+    </ElementType>
+  </Function>
+</Database>
