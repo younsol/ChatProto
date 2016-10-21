@@ -5,6 +5,7 @@ using NGTUtil;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 
 namespace ChatProto
@@ -52,18 +53,18 @@ namespace ChatProto
             
             try
             {
-                var userCreate = ChatProtoDb.UserCreate(packet.Nickname, StaticUtility.Sha256Crypt(packet.Password));
-                await userCreate;
-                var userCreateResult = userCreate.Result.FirstOrDefault();
-                if (userCreateResult == null)
+                using (var userCreate = new UserCreate { Nickname = packet.Nickname, Password = StaticUtility.Sha256Crypt(packet.Password) })
+                using (var userCreateExecute = userCreate.ExecuteAsync(ChatProtoSqlServer.Instance))
                 {
-                    throw new Exception("User Inquiry Failure!");
+                    await userCreateExecute;
+                    var userCreateResult = userCreate.Result.FirstOrDefault();
+                    if (userCreateResult == null)
+                    {
+                        throw new Exception("User Inquiry Failure!");
+                    }
+                    response.UserInfo = userCreateResult;
+                    response.Result = 0;
                 }
-
-                response.UserInfo = new UserInfo();
-                response.UserInfo.UserId = userCreateResult.UserId;
-                response.UserInfo.Nickname = userCreateResult.Nickname;
-                response.Result = 0;
             }
             catch (Exception e)
             {
@@ -88,33 +89,42 @@ namespace ChatProto
 
             try
             {
-                var userInquiry = ChatProtoDb.UserInquiry(packet.Nickname, StaticUtility.Sha256Crypt(packet.Password));
-                await userInquiry;
-                var userInquiryResult = userInquiry.Result.First();
-                if (userInquiryResult == null)
+                using (var userInquiry = new UserInquiry { Nickname = packet.Nickname, Password = StaticUtility.Sha256Crypt(packet.Password) })
+                using (var userInquiryExecute = userInquiry.ExecuteAsync(ChatProtoSqlServer.Instance))
                 {
-                    throw new Exception("User Inquiry Failure!");
+                    await userInquiryExecute;
+                    var userInquiryResult = userInquiry.Result.First();
+                    if (userInquiryResult == null)
+                    {
+                        throw new Exception("User Inquiry Failure!");
+                    }
+
+                    UserInfo = userInquiryResult;
+                    response.UserInfo = UserInfo.Clone() as UserInfo;
                 }
 
-                UserInfo = new UserInfo();
-                UserInfo.UserId = userInquiryResult.UserId;
-                UserInfo.Nickname = userInquiryResult.Nickname;
-                response.UserInfo = UserInfo.Clone() as UserInfo;
-                
                 var noti = new SN_UserChatRoomInfoList();
 
-                var userChatRoomListInquiry = ChatProtoDb.UserChatRoomListInquiry(UserInfo.UserId);
-                await userChatRoomListInquiry;
-                noti.ChatRoomInfoList = new List<ChatRoomInfo>();
-                foreach (var result in userChatRoomListInquiry.Result)
+                using (var userChatRoomListInquiry = new UserChatRoomListInquiry { UserId = UserInfo.UserId })
+                using (var userChatRoomListInquiryExecute = userChatRoomListInquiry.ExecuteAsync(ChatProtoSqlServer.Instance))
                 {
-                    var subscribeChatRoom = ChatRoom.Subscribe(this, result.ChatRoomId);
-                    await subscribeChatRoom;
-                    JoinedChatRooms.TryAdd(subscribeChatRoom.Result.ChatRoomInfo.ChatRoomId, subscribeChatRoom.Result);
-                    noti.ChatRoomInfoList.Add(subscribeChatRoom.Result.ChatRoomInfo.Clone() as ChatRoomInfo);
+                    await userChatRoomListInquiryExecute;
+                    if (!userChatRoomListInquiryExecute.Result)
+                    {
+                        throw new Exception("UserChatRoomListInquiry Failure!");
+                    }
+                    noti.ChatRoomInfoList = new List<ChatRoomInfo>();
+                    foreach (var result in userChatRoomListInquiry.Result)
+                    {
+                        var subscribeChatRoom = ChatRoom.Subscribe(this, result.ChatRoomId);
+                        await subscribeChatRoom;
+                        JoinedChatRooms.TryAdd(subscribeChatRoom.Result.ChatRoomInfo.ChatRoomId, subscribeChatRoom.Result);
+                        noti.ChatRoomInfoList.Add(subscribeChatRoom.Result.ChatRoomInfo.Clone() as ChatRoomInfo);
+                    }
+                    Send(noti);
                 }
-                Send(noti);
-                
+
+
                 if (!UserContainer.TryAdd(UserInfo.UserId, this))
                 {
                     Console.WriteLine($"Fatal Error occured on Adding User!! [UserId: {UserInfo.UserId}]");
@@ -165,16 +175,16 @@ namespace ChatProto
 
             try
             {
-                var chatRoomListInquiry = ChatProtoDb.ChatRoomListInquiry();
-                await chatRoomListInquiry;
-                response.ChatRoomInfoList = new List<ChatRoomInfo>();
-                foreach (var chatRoomInfo in chatRoomListInquiry.Result)
+
+                using (var chatRoomListInquiry = new ChatRoomListInquiry())
+                using (var chatRoomListInquiryExecute = chatRoomListInquiry.ExecuteAsync(ChatProtoSqlServer.Instance))
                 {
-                    response.ChatRoomInfoList.Add(new ChatRoomInfo
+                    await chatRoomListInquiryExecute;
+                    if (!chatRoomListInquiryExecute.Result)
                     {
-                        ChatRoomId = chatRoomInfo.ChatRoomId,
-                        Title = chatRoomInfo.Title
-                    });
+                        throw new Exception("ChatRoomListInquiry Failure!");
+                    }
+                    response.ChatRoomInfoList = chatRoomListInquiry.Result;
                 }
                 response.Result = 0;
             }

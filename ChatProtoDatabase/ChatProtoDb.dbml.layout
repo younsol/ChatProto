@@ -33,7 +33,7 @@
         <classShapeMoniker Id="6c56fd6e-34e5-4453-b1be-a79304530381" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(1.75 : 4); (1.75 : 2.10942510742187); (3.04166666666667 : 2.10942510742187 : JumpStart); (3.20833333333333 : 2.10942510742187 : JumpEnd); (3.5 : 2.10942510742187)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(1.75 : 4); (1.75 : 2.10942510742187); (3.5 : 2.10942510742187)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/ChatProtoDbDataContext/ChatRoom/ChatRoom_Chat" />
       <nodes>
         <classShapeMoniker Id="3cf6316a-be1f-4bab-848b-e7b740f1ee87" />

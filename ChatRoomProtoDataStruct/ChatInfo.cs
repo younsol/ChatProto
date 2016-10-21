@@ -11,15 +11,6 @@ namespace ChatProtoDataStruct
         public string ChatText { get; set; }
         public DateTime ChatTime { get; set; }
 
-        public object Clone()
-        {
-            ChatInfo cloned = new ChatInfo();
-            cloned.ChatId = ChatId;
-            cloned.ChatRoomId = ChatRoomId;
-            cloned.UserId = UserId;
-            cloned.ChatText = ChatText.Clone() as string;
-            cloned.ChatTime = ChatTime;
-            return cloned;
-        }
+        public object Clone() { return MemberwiseClone(); }
     }
 }

@@ -15,12 +15,12 @@ namespace ChatProto
 
         public static async Task<ChatRoomInfo> Create(User user, string title)
         {
-            var chatRoomCreate = ChatProtoDb.ChatRoomCreate(user.UserInfo.UserId, title);
-            await chatRoomCreate;
-            var chatRoomCreateResult = chatRoomCreate.Result.First();
-            if (chatRoomCreateResult == null)
-                return null;
-            return new ChatRoomInfo { ChatRoomId = chatRoomCreateResult.ChatroomId, Title = chatRoomCreateResult.Title };
+            using (var chatRoomCreate = new ChatRoomCreate { UserId = user.UserInfo.UserId, Title = title })
+            using (var chatRoomCreateExecute = chatRoomCreate.ExecuteAsync(ChatProtoSqlServer.Instance))
+            {
+                await chatRoomCreateExecute;
+                return chatRoomCreate.Result.FirstOrDefault();
+            }
         }
 
         public static async Task<ChatRoom> Join(User user, long chatRoomId)
@@ -84,44 +84,42 @@ namespace ChatProto
         public static async Task<ChatRoom> Load(long chatRoomId)
         {
             ChatRoom chatRoom;
-            using (var chatRoomInquiry = ChatProtoDb.ChatRoomInquiry(chatRoomId))
+            using (var chatRoomInquiry = new ChatRoomInquiry { ChatRoomId = chatRoomId })
+            using (var chatRoomInquiryExecute = chatRoomInquiry.ExecuteAsync(ChatProtoSqlServer.Instance))
             {
-                await chatRoomInquiry;
+                await chatRoomInquiryExecute;
                 var chatRoomInquiryResult = chatRoomInquiry.Result.First();
                 if (chatRoomInquiryResult == null)
                 {
                     return null;
                 }
-                chatRoom = new ChatRoom {
-                    ChatRoomInfo = new ChatRoomInfo { ChatRoomId = chatRoomInquiryResult.ChatRoomId, Title = chatRoomInquiryResult.Title },
+
+                chatRoom = new ChatRoom
+                {
+                    ChatRoomInfo = chatRoomInquiryResult,
                     Members = new ConcurrentBag<UserInfo>(),
                     Subscribers = new ConcurrentBag<User>(),
                     ChatHistory = new ConcurrentDictionary<long, ChatInfo>()
                 };
             }
 
-            using (var chatRoomUserInquiry = ChatProtoDb.ChatRoomUserInquiry(chatRoomId))
+            using (var chatRoomUserInquiry = new ChatRoomUserInquiry { ChatRoomId = chatRoomId })
+            using (var chatRoomUserInquiryExecute = chatRoomUserInquiry.ExecuteAsync(ChatProtoSqlServer.Instance))
             {
-                await chatRoomUserInquiry;
-                foreach (var result in chatRoomUserInquiry.Result)
+                await chatRoomUserInquiryExecute;
+                foreach (var userInfo in chatRoomUserInquiry.Result)
                 {
-                    chatRoom.Members.Add(new UserInfo { UserId = result.UserId, Nickname = result.Nickname });
+                    chatRoom.Members.Add(userInfo);
                 }
             }
 
-            using (var chatInfoHitoryInquiry = ChatProtoDb.ChatInquiry(chatRoom.ChatRoomInfo.ChatRoomId))
+            using (var chatInquiry = new ChatInquiry { ChatRoomId = chatRoom.ChatRoomInfo.ChatRoomId, Count = 100 })
+            using (var chatInquiryExecute = chatInquiry.ExecuteAsync(ChatProtoSqlServer.Instance))
             {
-                await chatInfoHitoryInquiry;
-                foreach (var result in chatInfoHitoryInquiry.Result)
+                await chatInquiryExecute;
+                foreach (var result in chatInquiry.Result)
                 {
-                    chatRoom.ChatHistory.TryAdd(result.ChatId, new ChatInfo
-                    {
-                        ChatId = result.ChatId,
-                        ChatRoomId = result.ChatRoomId,
-                        UserId = result.UserId,
-                        ChatText = result.ChatText,
-                        ChatTime = result.ChatTime
-                    });
+                    chatRoom.ChatHistory.TryAdd(result.ChatId, result);
                 }
             }
             return Container.TryAdd(chatRoom.ChatRoomInfo.ChatRoomId, chatRoom) ? chatRoom : null;
@@ -153,48 +151,50 @@ namespace ChatProto
 
         private async Task<bool> AddMember(UserInfo userInfo)
         {
-            var chatRoomJoin = ChatProtoDb.ChatRoomJoin(ChatRoomInfo.ChatRoomId, userInfo.UserId);
-            await chatRoomJoin;
-            var chatRoomJoinResult = chatRoomJoin.Result.First();
-            if (chatRoomJoinResult == null)
+            using (var chatRoomJoin = new ChatRoomJoin { ChatRoomId = ChatRoomInfo.ChatRoomId, UserId = userInfo.UserId })
+            using (var chatRoomJoinExecute = chatRoomJoin.ExecuteAsync(ChatProtoSqlServer.Instance))
             {
-                return false;
+                await chatRoomJoinExecute;
+                var chatRoomJoinResult = chatRoomJoin.Result.First();
+                if (chatRoomJoinResult == null)
+                {
+                    return false;
+                }
+                Members.Add(userInfo);
+                return true;
             }
-
-            Members.Add(userInfo);
-            return true;
         }
 
         private async void RemoveMember(UserInfo userInfo)
         {
-            var chatRoomLeave = ChatProtoDb.ChatRoomLeave(ChatRoomInfo.ChatRoomId, userInfo.UserId);
-            await chatRoomLeave;
-            Members.TryTake(out userInfo);
+            using (var chatRoomLeave = new ChatRoomLeave { ChatRoomId = ChatRoomInfo.ChatRoomId, UserId = userInfo.UserId })
+            using (var chatRoomLeaveExecute = chatRoomLeave.ExecuteAsync(ChatProtoSqlServer.Instance))
+            {
+                await chatRoomLeaveExecute;
+                Members.TryTake(out userInfo);
+            }
         }
 
         public async void Broadcast(User user, string chatText)
         {
-            var chatCreate = ChatProtoDb.ChatCreate(ChatRoomInfo.ChatRoomId, user.UserInfo.UserId, chatText);
-            await chatCreate;
-            var chatCreateResult = chatCreate.Result.First();
-            if (chatCreateResult == null)
+            using (var chatCreate = new ChatCreate { ChatRoomId = ChatRoomInfo.ChatRoomId, UserId = user.UserInfo.UserId, ChatText = chatText })
+            using (var chatCreateExecute = chatCreate.ExecuteAsync(ChatProtoSqlServer.Instance))
             {
-                return;
-            }
+                await chatCreateExecute;
+                if (!chatCreateExecute.Result)
+                {
+                    return;
+                }
 
-            var newChat = new ChatInfo
-            {
-                ChatId = chatCreateResult.ChatId,
-                ChatRoomId = chatCreateResult.ChatRoomId,
-                UserId = chatCreateResult.UserId,
-                ChatText = chatCreateResult.ChatText,
-                ChatTime = chatCreateResult.ChatTime
-            };
-            ChatHistory.TryAdd(newChat.ChatId, newChat);
-            var noti = new SN_Chat { ChatInfo = newChat };
-            foreach (var subscriber in Subscribers)
-            {
-                subscriber.Send(noti);
+                foreach (var chatInfo in chatCreate.Result)
+                {
+                    ChatHistory.TryAdd(chatInfo.ChatId, chatInfo);
+                    var noti = new SN_Chat { ChatInfo = chatInfo };
+                    foreach (var subscriber in Subscribers)
+                    {
+                        subscriber.Send(noti);
+                    }
+                }
             }
         }
 

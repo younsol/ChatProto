@@ -106,6 +106,13 @@ namespace ChatProtoDatabase
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.ChatCreate")]
+		public ISingleResult<ChatCreateResult> ChatCreate([global::System.Data.Linq.Mapping.ParameterAttribute(Name="ChatRoomId", DbType="BigInt")] System.Nullable<long> chatRoomId, [global::System.Data.Linq.Mapping.ParameterAttribute(Name="UserId", DbType="BigInt")] System.Nullable<long> userId, [global::System.Data.Linq.Mapping.ParameterAttribute(Name="ChatText", DbType="Text")] string chatText)
+		{
+			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), chatRoomId, userId, chatText);
+			return ((ISingleResult<ChatCreateResult>)(result.ReturnValue));
+		}
+		
 		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.UserInquiry")]
 		public ISingleResult<UserInquiryResult> UserInquiry([global::System.Data.Linq.Mapping.ParameterAttribute(Name="Nickname", DbType="NVarChar(50)")] string nickname, [global::System.Data.Linq.Mapping.ParameterAttribute(Name="Password", DbType="NVarChar(256)")] string password)
 		{
@@ -127,6 +134,13 @@ namespace ChatProtoDatabase
 			return ((ISingleResult<ChatRoomCreateResult>)(result.ReturnValue));
 		}
 		
+		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.ChatRoomInquiry")]
+		public ISingleResult<ChatRoomInquiryResult> ChatRoomInquiry([global::System.Data.Linq.Mapping.ParameterAttribute(Name="ChatRoomId", DbType="BigInt")] System.Nullable<long> chatRoomId)
+		{
+			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), chatRoomId);
+			return ((ISingleResult<ChatRoomInquiryResult>)(result.ReturnValue));
+		}
+		
 		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.ChatRoomJoin")]
 		public ISingleResult<ChatRoomJoinResult> ChatRoomJoin([global::System.Data.Linq.Mapping.ParameterAttribute(Name="ChatRoomId", DbType="BigInt")] System.Nullable<long> chatRoomId, [global::System.Data.Linq.Mapping.ParameterAttribute(Name="UserId", DbType="BigInt")] System.Nullable<long> userId)
 		{
@@ -141,6 +155,27 @@ namespace ChatProtoDatabase
 			return ((ISingleResult<ChatRoomLeaveResult>)(result.ReturnValue));
 		}
 		
+		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.ChatRoomListInquiry")]
+		public ISingleResult<ChatRoomListInquiryResult> ChatRoomListInquiry()
+		{
+			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())));
+			return ((ISingleResult<ChatRoomListInquiryResult>)(result.ReturnValue));
+		}
+		
+		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.ChatRoomUserInquiry")]
+		public ISingleResult<ChatRoomUserInquiryResult> ChatRoomUserInquiry([global::System.Data.Linq.Mapping.ParameterAttribute(Name="ChatRoomId", DbType="BigInt")] System.Nullable<long> chatRoomId)
+		{
+			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), chatRoomId);
+			return ((ISingleResult<ChatRoomUserInquiryResult>)(result.ReturnValue));
+		}
+		
+		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.UserChatRoomListInquiry")]
+		public ISingleResult<UserChatRoomListInquiryResult> UserChatRoomListInquiry([global::System.Data.Linq.Mapping.ParameterAttribute(Name="UserId", DbType="BigInt")] System.Nullable<long> userId)
+		{
+			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), userId);
+			return ((ISingleResult<UserChatRoomListInquiryResult>)(result.ReturnValue));
+		}
+		
 		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.UserCreate")]
 		public ISingleResult<UserCreateResult> UserCreate([global::System.Data.Linq.Mapping.ParameterAttribute(Name="Nickname", DbType="NVarChar(50)")] string nickname, [global::System.Data.Linq.Mapping.ParameterAttribute(Name="Password", DbType="NVarChar(256)")] string password)
 		{
@@ -153,41 +188,6 @@ namespace ChatProtoDatabase
 		{
 			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), userId);
 			return ((ISingleResult<UserDeleteResult>)(result.ReturnValue));
-		}
-		
-		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.ChatRoomListInquiry")]
-		public ISingleResult<ChatRoomListInquiryResult> ChatRoomListInquiry()
-		{
-			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())));
-			return ((ISingleResult<ChatRoomListInquiryResult>)(result.ReturnValue));
-		}
-		
-		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.UserChatRoomListInquiry")]
-		public ISingleResult<UserChatRoomListInquiryResult> UserChatRoomListInquiry([global::System.Data.Linq.Mapping.ParameterAttribute(Name="UserId", DbType="BigInt")] System.Nullable<long> userId)
-		{
-			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), userId);
-			return ((ISingleResult<UserChatRoomListInquiryResult>)(result.ReturnValue));
-		}
-		
-		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.ChatRoomInquiry")]
-		public ISingleResult<ChatRoomInquiryResult> ChatRoomInquiry([global::System.Data.Linq.Mapping.ParameterAttribute(Name="ChatRoomId", DbType="BigInt")] System.Nullable<long> chatRoomId)
-		{
-			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), chatRoomId);
-			return ((ISingleResult<ChatRoomInquiryResult>)(result.ReturnValue));
-		}
-		
-		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.ChatRoomUserInquiry")]
-		public ISingleResult<ChatRoomUserInquiryResult> ChatRoomUserInquiry([global::System.Data.Linq.Mapping.ParameterAttribute(Name="ChatRoomId", DbType="BigInt")] System.Nullable<long> chatRoomId)
-		{
-			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), chatRoomId);
-			return ((ISingleResult<ChatRoomUserInquiryResult>)(result.ReturnValue));
-		}
-		
-		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.ChatCreate")]
-		public ISingleResult<ChatCreateResult> ChatCreate([global::System.Data.Linq.Mapping.ParameterAttribute(Name="ChatRoomId", DbType="BigInt")] System.Nullable<long> chatRoomId, [global::System.Data.Linq.Mapping.ParameterAttribute(Name="UserId", DbType="BigInt")] System.Nullable<long> userId, [global::System.Data.Linq.Mapping.ParameterAttribute(Name="ChatText", DbType="Text")] string chatText)
-		{
-			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), chatRoomId, userId, chatText);
-			return ((ISingleResult<ChatCreateResult>)(result.ReturnValue));
 		}
 	}
 	
@@ -907,6 +907,104 @@ namespace ChatProtoDatabase
 		}
 	}
 	
+	public partial class ChatCreateResult
+	{
+		
+		private long _ChatId;
+		
+		private long _ChatRoomId;
+		
+		private long _UserId;
+		
+		private string _ChatText;
+		
+		private System.DateTime _ChatTime;
+		
+		public ChatCreateResult()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ChatId", DbType="BigInt NOT NULL")]
+		public long ChatId
+		{
+			get
+			{
+				return this._ChatId;
+			}
+			set
+			{
+				if ((this._ChatId != value))
+				{
+					this._ChatId = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ChatRoomId", DbType="BigInt NOT NULL")]
+		public long ChatRoomId
+		{
+			get
+			{
+				return this._ChatRoomId;
+			}
+			set
+			{
+				if ((this._ChatRoomId != value))
+				{
+					this._ChatRoomId = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UserId", DbType="BigInt NOT NULL")]
+		public long UserId
+		{
+			get
+			{
+				return this._UserId;
+			}
+			set
+			{
+				if ((this._UserId != value))
+				{
+					this._UserId = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ChatText", DbType="Text NOT NULL", CanBeNull=false, UpdateCheck=UpdateCheck.Never)]
+		public string ChatText
+		{
+			get
+			{
+				return this._ChatText;
+			}
+			set
+			{
+				if ((this._ChatText != value))
+				{
+					this._ChatText = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ChatTime", DbType="DateTime NOT NULL")]
+		public System.DateTime ChatTime
+		{
+			get
+			{
+				return this._ChatTime;
+			}
+			set
+			{
+				if ((this._ChatTime != value))
+				{
+					this._ChatTime = value;
+				}
+			}
+		}
+	}
+	
 	public partial class UserInquiryResult
 	{
 		
@@ -1093,136 +1191,14 @@ namespace ChatProtoDatabase
 		}
 	}
 	
-	public partial class ChatRoomJoinResult
-	{
-		
-		private int _Result;
-		
-		public ChatRoomJoinResult()
-		{
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Result", DbType="Int NOT NULL")]
-		public int Result
-		{
-			get
-			{
-				return this._Result;
-			}
-			set
-			{
-				if ((this._Result != value))
-				{
-					this._Result = value;
-				}
-			}
-		}
-	}
-	
-	public partial class ChatRoomLeaveResult
-	{
-		
-		private System.Nullable<int> _RemainUserCount;
-		
-		public ChatRoomLeaveResult()
-		{
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RemainUserCount", DbType="Int")]
-		public System.Nullable<int> RemainUserCount
-		{
-			get
-			{
-				return this._RemainUserCount;
-			}
-			set
-			{
-				if ((this._RemainUserCount != value))
-				{
-					this._RemainUserCount = value;
-				}
-			}
-		}
-	}
-	
-	public partial class UserCreateResult
-	{
-		
-		private long _UserId;
-		
-		private string _Nickname;
-		
-		public UserCreateResult()
-		{
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UserId", DbType="BigInt NOT NULL")]
-		public long UserId
-		{
-			get
-			{
-				return this._UserId;
-			}
-			set
-			{
-				if ((this._UserId != value))
-				{
-					this._UserId = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Nickname", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
-		public string Nickname
-		{
-			get
-			{
-				return this._Nickname;
-			}
-			set
-			{
-				if ((this._Nickname != value))
-				{
-					this._Nickname = value;
-				}
-			}
-		}
-	}
-	
-	public partial class UserDeleteResult
-	{
-		
-		private int _Result;
-		
-		public UserDeleteResult()
-		{
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Result", DbType="Int NOT NULL")]
-		public int Result
-		{
-			get
-			{
-				return this._Result;
-			}
-			set
-			{
-				if ((this._Result != value))
-				{
-					this._Result = value;
-				}
-			}
-		}
-	}
-	
-	public partial class ChatRoomListInquiryResult
+	public partial class ChatRoomInquiryResult
 	{
 		
 		private long _ChatRoomId;
 		
 		private string _Title;
 		
-		public ChatRoomListInquiryResult()
+		public ChatRoomInquiryResult()
 		{
 		}
 		
@@ -1259,40 +1235,66 @@ namespace ChatProtoDatabase
 		}
 	}
 	
-	public partial class UserChatRoomListInquiryResult
+	public partial class ChatRoomJoinResult
 	{
 		
-		private long _ChatRoomId;
+		private int _Result;
 		
-		public UserChatRoomListInquiryResult()
+		public ChatRoomJoinResult()
 		{
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ChatRoomId", DbType="BigInt NOT NULL")]
-		public long ChatRoomId
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Result", DbType="Int NOT NULL")]
+		public int Result
 		{
 			get
 			{
-				return this._ChatRoomId;
+				return this._Result;
 			}
 			set
 			{
-				if ((this._ChatRoomId != value))
+				if ((this._Result != value))
 				{
-					this._ChatRoomId = value;
+					this._Result = value;
 				}
 			}
 		}
 	}
 	
-	public partial class ChatRoomInquiryResult
+	public partial class ChatRoomLeaveResult
+	{
+		
+		private System.Nullable<int> _Result;
+		
+		public ChatRoomLeaveResult()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Result", DbType="Int")]
+		public System.Nullable<int> Result
+		{
+			get
+			{
+				return this._Result;
+			}
+			set
+			{
+				if ((this._Result != value))
+				{
+					this._Result = value;
+				}
+			}
+		}
+	}
+	
+	public partial class ChatRoomListInquiryResult
 	{
 		
 		private long _ChatRoomId;
 		
 		private string _Title;
 		
-		public ChatRoomInquiryResult()
+		public ChatRoomListInquiryResult()
 		{
 		}
 		
@@ -1373,37 +1375,13 @@ namespace ChatProtoDatabase
 		}
 	}
 	
-	public partial class ChatCreateResult
+	public partial class UserChatRoomListInquiryResult
 	{
-		
-		private long _ChatId;
 		
 		private long _ChatRoomId;
 		
-		private long _UserId;
-		
-		private string _ChatText;
-		
-		private System.DateTime _ChatTime;
-		
-		public ChatCreateResult()
+		public UserChatRoomListInquiryResult()
 		{
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ChatId", DbType="BigInt NOT NULL")]
-		public long ChatId
-		{
-			get
-			{
-				return this._ChatId;
-			}
-			set
-			{
-				if ((this._ChatId != value))
-				{
-					this._ChatId = value;
-				}
-			}
 		}
 		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ChatRoomId", DbType="BigInt NOT NULL")]
@@ -1420,6 +1398,18 @@ namespace ChatProtoDatabase
 					this._ChatRoomId = value;
 				}
 			}
+		}
+	}
+	
+	public partial class UserCreateResult
+	{
+		
+		private long _UserId;
+		
+		private string _Nickname;
+		
+		public UserCreateResult()
+		{
 		}
 		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UserId", DbType="BigInt NOT NULL")]
@@ -1438,34 +1428,44 @@ namespace ChatProtoDatabase
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ChatText", DbType="Text NOT NULL", CanBeNull=false, UpdateCheck=UpdateCheck.Never)]
-		public string ChatText
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Nickname", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
+		public string Nickname
 		{
 			get
 			{
-				return this._ChatText;
+				return this._Nickname;
 			}
 			set
 			{
-				if ((this._ChatText != value))
+				if ((this._Nickname != value))
 				{
-					this._ChatText = value;
+					this._Nickname = value;
 				}
 			}
 		}
+	}
+	
+	public partial class UserDeleteResult
+	{
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ChatTime", DbType="DateTime NOT NULL")]
-		public System.DateTime ChatTime
+		private int _Result;
+		
+		public UserDeleteResult()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Result", DbType="Int NOT NULL")]
+		public int Result
 		{
 			get
 			{
-				return this._ChatTime;
+				return this._Result;
 			}
 			set
 			{
-				if ((this._ChatTime != value))
+				if ((this._Result != value))
 				{
-					this._ChatTime = value;
+					this._Result = value;
 				}
 			}
 		}

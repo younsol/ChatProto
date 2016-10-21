@@ -1,4 +1,5 @@
-﻿using ChatProtoNetwork;
+﻿using ChatProtoDataStruct;
+using ChatProtoNetwork;
 using NGTUtil;
 using System;
 using System.Threading;
@@ -75,6 +76,8 @@ namespace ChatServerTestClient
 
         protected override void HandlePacket(SA_UserSignIn packet)
         {
+            if (packet.Result == 0)
+                ChatServerTestClient.UserInfo = packet.UserInfo;
         }
 
         protected override void HandlePacket(SA_UserSignUp packet)
@@ -84,8 +87,9 @@ namespace ChatServerTestClient
     }
     class ChatServerTestClient
     {
-        Connection connection = new Connection();
-
+        public static UserInfo UserInfo { get; set; }
+        private Connection connection = new Connection();
+        
         public void CQ_UserSignUp(string nickname, string password)
         {
             connection.Send(new CQ_UserSignUp { Nickname = nickname, Password = password });
@@ -136,7 +140,7 @@ namespace ChatServerTestClient
                 try
                 {
                     Console.WriteLine();
-                    Console.Write("..>");
+                    Console.Write($"{UserInfo?.Nickname}..>");
                     var tokens = Console.ReadLine().Split(' ');
                     if (tokens.Length == 0)
                         continue;
@@ -148,12 +152,20 @@ namespace ChatServerTestClient
                             break;
                         case "signup":
                             if (tokens.Length < 3)
+                            {
+                                Console.WriteLine("-- Check Parameters.. --");
+                                Console.WriteLine("signup [Nickname] [Password]");
                                 continue;
+                            }
                             client.CQ_UserSignUp(tokens[1], tokens[2]);
                             break;
                         case "signin":
                             if (tokens.Length < 3)
+                            {
+                                Console.WriteLine("-- Check Parameters.. --");
+                                Console.WriteLine("signin [Nickname] [Password]");
                                 continue;
+                            }
                             client.CQ_UserSignIn(tokens[1], tokens[2]);
                             break;
                         case "myrooms":
@@ -164,35 +176,71 @@ namespace ChatServerTestClient
                             break;
                         case "createroom":
                             if (tokens.Length < 2)
+                            {
+                                Console.WriteLine("-- Check Parameters.. --");
+                                Console.WriteLine("createroom [Title]");
                                 continue;
+                            }
                             client.CQ_ChatRoomCreate(tokens[1]);
                             break;
                         case "joinroom":
                             if (tokens.Length < 2)
+                            {
+                                Console.WriteLine("-- Check Parameters.. --");
+                                Console.WriteLine("joinroom [ChatRoomId]");
                                 continue;
+                            }
                             client.CQ_ChatRoomJoin(int.Parse(tokens[1]));
                             break;
                         case "leaveroom":
                             if (tokens.Length < 2)
+                            {
+                                Console.WriteLine("-- Check Parameters.. --");
+                                Console.WriteLine("leaveroom [ChatRoomId]");
                                 continue;
+                            }
                             client.CQ_ChatRoomLeave(int.Parse(tokens[1]));
                             break;
                         case "roominfo":
                             if (tokens.Length < 2)
+                            {
+                                Console.WriteLine("-- Check Parameters.. --");
+                                Console.WriteLine("roominfo [ChatRoomId]");
                                 continue;
+                            }
                             client.CQ_ChatRoomInfo(int.Parse(tokens[1]));
                             break;
                         case "chathistory":
                             if (tokens.Length < 2)
+                            {
+                                Console.WriteLine("-- Check Parameters.. --");
+                                Console.WriteLine("chathistory [ChatRoomId]");
                                 continue;
+                            }
                             client.CQ_ChatInfoHistory(int.Parse(tokens[1]));
                             break;
                         case "chat":
                             if (tokens.Length < 3)
+                            {
+                                Console.WriteLine("-- Check Parameters.. --");
+                                Console.WriteLine("chat [ChatRoomId] [ChatText]");
                                 continue;
+                            }
                             client.CN_Chat(int.Parse(tokens[1]), tokens[2]);
                             break;
                         default:
+                            Console.WriteLine("-- CommandList --");
+                            Console.WriteLine("exit");
+                            Console.WriteLine("signup [Nickname] [Password]");
+                            Console.WriteLine("signin [Nickname] [Password]");
+                            Console.WriteLine("myrooms");
+                            Console.WriteLine("allrooms");
+                            Console.WriteLine("createroom [Title]");
+                            Console.WriteLine("joinroom [ChatRoomId]");
+                            Console.WriteLine("leaveroom [ChatRoomId]");
+                            Console.WriteLine("roominfo [ChatRoomId]");
+                            Console.WriteLine("chathistory [ChatRoomId]");
+                            Console.WriteLine("chat [ChatRoomId] [ChatText]");
                             continue;
                     }
                 }

@@ -24,6 +24,11 @@ namespace NGTUtil
             return rv;
         }
 
+        public static T[] Combine<T>(T[] front, T[] back)
+        {
+            return front.Concat(back).ToArray();
+        }
+
         public static string Sha256Crypt(string text)
         {
             return Encoding.Default.GetString(Sha256.ComputeHash(Encoding.ASCII.GetBytes(text)));

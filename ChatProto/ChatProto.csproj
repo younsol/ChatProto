@@ -52,6 +52,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Room\ChatRoom.cs" />
+    <Compile Include="User\Exeception.cs" />
     <Compile Include="User\User.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -76,6 +77,10 @@
     <ProjectReference Include="..\ChatRoomProtoDataStruct\ChatProtoDataStruct.csproj">
       <Project>{07142db3-e1b4-4ea2-8ed1-ede3e665a995}</Project>
       <Name>ChatProtoDataStruct</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NGTDatabase\NGTSqlServer.csproj">
+      <Project>{fadfc988-c3eb-4fb8-9336-0b460bece5c1}</Project>
+      <Name>NGTSqlServer</Name>
     </ProjectReference>
     <ProjectReference Include="..\NGTNetwork\NGTNetwork.csproj">
       <Project>{FAE095DD-C252-44D7-AF75-98900FE484D0}</Project>
