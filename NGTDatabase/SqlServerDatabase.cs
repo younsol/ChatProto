@@ -15,6 +15,12 @@ namespace NGTSqlServer
             connection.Open();
         }
 
+        ~SqlServerDatabase()
+        {
+            connection.Close();
+            connection.Dispose();
+        }
+
         public async Task<DataTable> ExecuteAsync(string command)
         {
             using (var executeSql = new SqlCommand(command, connection).ExecuteReaderAsync())
