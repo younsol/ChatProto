@@ -156,7 +156,7 @@ namespace ChatProto
             {
                 await chatRoomJoinExecute;
                 var chatRoomJoinResult = chatRoomJoin.Result.First();
-                if (chatRoomJoinResult == null)
+                if (chatRoomJoinResult == null || chatRoomJoinResult.Result < 0 )
                 {
                     return false;
                 }
@@ -171,6 +171,11 @@ namespace ChatProto
             using (var chatRoomLeaveExecute = chatRoomLeave.ExecuteAsync(ChatProtoSqlServer.Instance))
             {
                 await chatRoomLeaveExecute;
+                var chatRoomLeaveResult = chatRoomLeave.Result.FirstOrDefault();
+                if (chatRoomLeaveResult == null || chatRoomLeaveResult.Result < 0)
+                {
+                    return;
+                }
                 Members.TryTake(out userInfo);
             }
         }
