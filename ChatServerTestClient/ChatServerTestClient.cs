@@ -228,7 +228,7 @@ namespace ChatServerTestClient
                             }
                             client.CN_Chat(int.Parse(tokens[1]), tokens[2]);
                             break;
-                        default:
+                        case "help":
                             Console.WriteLine("-- CommandList --");
                             Console.WriteLine("exit");
                             Console.WriteLine("signup [Nickname] [Password]");
@@ -241,7 +241,10 @@ namespace ChatServerTestClient
                             Console.WriteLine("roominfo [ChatRoomId]");
                             Console.WriteLine("chathistory [ChatRoomId]");
                             Console.WriteLine("chat [ChatRoomId] [ChatText]");
-                            continue;
+                            break;
+                        default:
+                            Console.WriteLine("type 'help' for command list..");
+                            break;
                     }
                 }
                 catch(Exception e)

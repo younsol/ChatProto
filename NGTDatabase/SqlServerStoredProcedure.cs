@@ -12,16 +12,16 @@ namespace NGTSqlServer
         protected List<TResult> result;
         public List<TResult> Result { get { return result; } }
 
-        private PropertyInfo[] reflection { get; set; }
+        private static PropertyInfo[] reflection = SetReflection();
 
-        public SqlServerStoredProcedure()
+        private static PropertyInfo[] SetReflection()
         {
-            reflection = typeof(TResult).GetProperties()
+            return typeof(TResult).GetProperties()
                 .Where(pi => pi.PropertyType.IsPrimitive ||
                 pi.PropertyType == typeof(string) ||
                 pi.PropertyType == typeof(DateTime)).ToArray();
         }
-        
+
         public abstract string GetCommand();
 
         protected bool LoadResult(DataTable dataTable)
@@ -52,9 +52,11 @@ namespace NGTSqlServer
 
         public async Task<bool> ExecuteAsync(SqlServerDatabase database)
         {
-            var executeCommand = database.ExecuteAsync(GetCommand());
-            await executeCommand;
-            return LoadResult(executeCommand.Result);
+            using (var executeCommand = database.ExecuteAsync(GetCommand()))
+            {
+                await executeCommand;
+                return LoadResult(executeCommand.Result);
+            }
         }
 
         public void Dispose() {}
