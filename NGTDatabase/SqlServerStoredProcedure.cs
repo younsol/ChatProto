@@ -9,8 +9,7 @@ namespace NGTSqlServer
 {
     public abstract class SqlServerStoredProcedure<TResult> : IDisposable where TResult : new()
     {
-        protected List<TResult> result;
-        public List<TResult> Result { get { return result; } }
+        public IList<TResult> Result { get; private set; }
 
         private static PropertyInfo[] reflection = SetReflection();
 
@@ -26,9 +25,9 @@ namespace NGTSqlServer
 
         protected bool LoadResult(DataTable dataTable)
         {
-            result = new List<TResult>();
             try
             {
+                var result = new List<TResult>(dataTable.Rows.Count);
                 foreach (DataRow row in dataTable.Rows)
                 {
                     var item = new TResult();
@@ -41,6 +40,7 @@ namespace NGTSqlServer
                     }
                     result.Add(item);
                 }
+                Result = result.AsReadOnly();
             }
             catch(Exception e)
             {

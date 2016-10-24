@@ -195,7 +195,7 @@ namespace ChatProto
                     {
                         throw new Exception("ChatRoomListInquiry Failure!");
                     }
-                    response.ChatRoomInfoList = chatRoomListInquiry.Result;
+                    response.ChatRoomInfoList = chatRoomListInquiry.Result.ToList();
                 }
                 response.Result = 0;
             }
