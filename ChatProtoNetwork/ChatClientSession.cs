@@ -4,11 +4,11 @@ using NGTNetwork;
 
 namespace ChatProtoNetwork
 {
-    public abstract class ChatClientSession : TcpClientSession<PacketSerializer>
+    public abstract class ChatClientSession : TcpClientSession<NetworkSerializer>
     {
         public ChatClientSession() : base()
         {
-            Serializer = PacketSerializer.Instance;
+            Serializer = NetworkSerializer.Instance;
         }
         
         public override void OnPacket(dynamic packet)

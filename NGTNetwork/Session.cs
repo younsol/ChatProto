@@ -7,6 +7,11 @@ using NGTUtil;
 
 namespace NGTNetwork
 {
+    public sealed class NetworkSerializer : Serializer
+    {
+        public static NetworkSerializer Instance = new NetworkSerializer();
+    }
+
     public interface Session
     {
         bool Send(object obj);
@@ -60,10 +65,11 @@ namespace NGTNetwork
             set { client = client ?? value; }
         }
 
-        public override bool Send(object o)
+        // connection이 끊겼거나, Serialize 실패했을 때에만
+        // Synced로 false가 return 된다.
+        public override bool Send(object packet)
         {
-            WriteAsync(Serializer.Serialize(o));
-            return true;
+            return WriteAsync(Serializer.Serialize(packet)).Result;
         }
 
         public override void Close()
@@ -72,12 +78,12 @@ namespace NGTNetwork
             Client.Close();
         }
 
-        protected async void WriteAsync(byte[] data)
+        protected async Task<bool> WriteAsync(byte[] data)
         {
-            if (!Client.Connected)
+            if (data == null || !Client.Connected)
             {
                 Close();
-                return;
+                return false;
             }
 
             byte[][] byteArrays = new byte[2][];
@@ -103,6 +109,7 @@ namespace NGTNetwork
                     queueCount = writeQueue.Count;
                 }
             }
+            return true;
         }
 
         protected async void ReadAsync()

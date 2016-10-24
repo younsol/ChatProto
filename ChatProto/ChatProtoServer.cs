@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-using ChatServerListener = NGTNetwork.TcpSocketListener<ChatProto.User, NGTNetwork.PacketSerializer>;
+using ChatServerListener = NGTNetwork.TcpSocketListener<ChatProto.User, NGTNetwork.NetworkSerializer>;
 
 namespace ChatProto
 {

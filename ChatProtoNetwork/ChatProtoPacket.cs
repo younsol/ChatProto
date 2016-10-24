@@ -7,13 +7,13 @@ using System.Collections.Generic;
 namespace ChatProtoNetwork
 {
     [Serializable]
-    public abstract class AnswerPacket : Packet
+    public abstract class AnswerPacket
     {
         public int Result { get; set; }
     }
 
     [Serializable]
-    public class CQ_UserSignUp : Packet
+    public class CQ_UserSignUp
     {
         public string Nickname { get; set; }
         public string Password { get; set; }
@@ -25,7 +25,7 @@ namespace ChatProtoNetwork
     }
 
     [Serializable]
-    public class CQ_UserSignIn : Packet
+    public class CQ_UserSignIn
     {
         public string Nickname { get; set; }
         public string Password { get; set; }
@@ -37,15 +37,15 @@ namespace ChatProtoNetwork
     }
 
     [Serializable]
-    public class CN_UserChatRoomInfoList : Packet {}
+    public class CN_UserChatRoomInfoList { }
     [Serializable]
-    public class SN_UserChatRoomInfoList : Packet
+    public class SN_UserChatRoomInfoList 
     {
         public List<ChatRoomInfo> ChatRoomInfoList { get; set; }
     }
 
     [Serializable]
-    public class CQ_ChatRoomInfoList : Packet {}
+    public class CQ_ChatRoomInfoList { }
     [Serializable]
     public class SA_ChatRoomInfoList : AnswerPacket
     {
@@ -53,7 +53,7 @@ namespace ChatProtoNetwork
     }
 
     [Serializable]
-    public class CQ_ChatRoomCreate : Packet
+    public class CQ_ChatRoomCreate 
     {
         public string Title { get; set; }
     }
@@ -65,7 +65,7 @@ namespace ChatProtoNetwork
     }
 
     [Serializable]
-    public class CQ_ChatRoomJoin : Packet
+    public class CQ_ChatRoomJoin 
     {
         public long ChatRoomId { get; set; }
     }
@@ -77,14 +77,14 @@ namespace ChatProtoNetwork
     }
 
     [Serializable]
-    public class SN_ChatRoomJoin : Packet
+    public class SN_ChatRoomJoin 
     {
         public long ChatRoomId { get; set; }
         public UserInfo User { get; set; }
     }
 
     [Serializable]
-    public class CQ_ChatRoomLeave : Packet
+    public class CQ_ChatRoomLeave 
     {
         public long ChatRoomId { get; set; }
     }
@@ -96,14 +96,14 @@ namespace ChatProtoNetwork
     }
 
     [Serializable]
-    public class SN_ChatRoomLeave : Packet
+    public class SN_ChatRoomLeave 
     {
         public long ChatRoomId { get; set; }
         public UserInfo UserInfo { get; set; }
     }
 
     [Serializable]
-    public class CQ_ChatRoomInfo : Packet
+    public class CQ_ChatRoomInfo 
     {
         public long ChatRoomId { get; set; }
     }
@@ -116,7 +116,7 @@ namespace ChatProtoNetwork
     }
 
     [Serializable]
-    public class CQ_ChatInfoHistory : Packet
+    public class CQ_ChatInfoHistory 
     {
         public long ChatRoomId { get; set; }
     }
@@ -129,14 +129,14 @@ namespace ChatProtoNetwork
     }
 
     [Serializable]
-    public class CN_Chat : Packet
+    public class CN_Chat 
     {
         public long ChatRoomId { get; set; }
         public string ChatText { get; set; }
     }
 
     [Serializable]
-    public class SN_Chat : Packet
+    public class SN_Chat 
     {
         public ChatInfo ChatInfo { get; set; }
     }

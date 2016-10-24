@@ -1,13 +1,14 @@
 ﻿using NGTNetwork;
+using NGTUtil;
 using System;
 
 namespace ChatProtoNetwork
 {
-    public abstract class ChatServerSession : TcpServerSession<PacketSerializer>
+    public abstract class ChatServerSession : TcpServerSession<NetworkSerializer>
     {
         public ChatServerSession() : base()
         {
-            Serializer = PacketSerializer.Instance;
+            Serializer = NetworkSerializer.Instance;
         }
         
         public override void OnPacket(dynamic packet)
