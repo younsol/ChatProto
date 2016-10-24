@@ -4,25 +4,20 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-using NGTUtil;
-
 namespace NGTNetwork
 {
-    public class TcpSocketListener<ISession, ISerializer>
-        where ISession : TcpServerSession<ISerializer>, new()
-        where ISerializer : Serializer
+    public class TcpSocketListener<ISession>
+        where ISession : TcpServerSession
     {
         private CancellationTokenSource cancellationTokenSource;
         private TcpListener listener;
-        private ulong sessionIndexer;
 
-        public bool StartListeningAsync(IPAddress ipAddress = null, int? port = null)
+        public bool StartListeningAsync(Func<TcpClient, ISession> sessionConstructor, IPAddress ipAddress = null, int? port = null)
         {
             if (listener != null) return false;
 
             cancellationTokenSource = new CancellationTokenSource();
             listener = new TcpListener(ipAddress ?? IPAddress.Any, port ?? 11000);
-            sessionIndexer = 0;
             try
             {
                 listener.Start();
@@ -34,7 +29,7 @@ namespace NGTNetwork
                 return false;
             }
 
-            Task t = AcceptClientsAsync();
+            Task t = AcceptClientsAsync(sessionConstructor);
             return true;
         }
 
@@ -45,16 +40,14 @@ namespace NGTNetwork
             listener = null;
         }
 
-        private async Task AcceptClientsAsync()
+        private async Task AcceptClientsAsync(Func<TcpClient, ISession> sessionConstructor)
         {
             while (!cancellationTokenSource.Token.IsCancellationRequested)
             {
                 var client = await listener.AcceptTcpClientAsync()
                     .ConfigureAwait(false);
 
-                var session = new ISession();
-                session.Index = ++sessionIndexer;
-                session.Client = client;
+                var session = sessionConstructor(client);
                 session.Accept();
             }
         }

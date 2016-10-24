@@ -1,49 +1,41 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 
 using NGTUtil;
 
 namespace NGTNetwork
 {
-    public sealed class NetworkSerializer : Serializer
-    {
-        public static NetworkSerializer Instance = new NetworkSerializer();
-    }
-
-    public interface Session
+    public interface ISession
     {
         bool Send(object obj);
         void Close();
         void OnPacket(dynamic packet);
     }
 
-    public interface ServerSession
+    public interface IServerSession
     {
         void Accept();
     }
 
-    public interface ClientSession
+    public interface IClientSession
     {
         void Connect(string host, int port);
     }
 
-    public abstract class Session<ISerializer> : Session
-        where ISerializer : Serializer
+    public abstract class Session : ISession
     {
-        private ulong? index;
-        public ulong? Index
-        {
-            get { return index; }
-            set { index = index ?? value; }
-        }
+        private static volatile int sessionIndexer = 0;
+        public readonly int Index;
 
-        private ISerializer serializer;
-        public ISerializer Serializer
+        protected readonly Serializer serializer;
+
+        public Session(Serializer serializer)
         {
-            protected get { return serializer; }
-            set { serializer = serializer ?? value; }
+            Index = Interlocked.Increment(ref sessionIndexer);
+            this.serializer = serializer;
         }
 
         public abstract bool Send(object obj);
@@ -52,35 +44,33 @@ namespace NGTNetwork
         public abstract void OnPacket(dynamic packet);
     }
 
-    public abstract class TcpSession<ISerializer>
-        : Session<ISerializer>
-        where ISerializer : Serializer
+    public abstract class TcpSession : Session
     {
         private ConcurrentQueue<byte[]> writeQueue = new ConcurrentQueue<byte[]>();
 
-        private TcpClient client;
-        public TcpClient Client
+        protected readonly TcpClient client;
+
+        public TcpSession(TcpClient client, Serializer serializer) : base(serializer)
         {
-            protected get { return client; }
-            set { client = client ?? value; }
+            this.client = client;
         }
 
         // connection이 끊겼거나, Serialize 실패했을 때에만
         // Synced로 false가 return 된다.
         public override bool Send(object packet)
         {
-            return WriteAsync(Serializer.Serialize(packet)).Result;
+            return WriteAsync(serializer.Serialize(packet)).Result;
         }
 
         public override void Close()
         {
             OnClose();
-            Client.Close();
+            client.Close();
         }
 
         protected async Task<bool> WriteAsync(byte[] data)
         {
-            if (data == null || !Client.Connected)
+            if (data == null || !client.Connected)
             {
                 Close();
                 return false;
@@ -102,7 +92,7 @@ namespace NGTNetwork
             {
                 byte[] sendData;
                 writeQueue.TryPeek(out sendData);
-                await Client.GetStream().WriteAsync(sendData, 0, sendData.Length);
+                await client.GetStream().WriteAsync(sendData, 0, sendData.Length);
                 lock (writeQueue)
                 {
                     writeQueue.TryDequeue(out sendData);
@@ -117,8 +107,8 @@ namespace NGTNetwork
             byte[] dataLengthData = new byte[4];
             try
             {
-                await Client.GetStream().ReadAsync(dataLengthData, 0, 4);
-                if (!Client.Connected)
+                await client.GetStream().ReadAsync(dataLengthData, 0, 4);
+                if (!client.Connected)
                 {
                     Close();
                 }
@@ -132,10 +122,10 @@ namespace NGTNetwork
                     else
                     {
                         byte[] data = new byte[dataLength];
-                        Client.GetStream().Read(data, 0, data.Length);
+                        client.GetStream().Read(data, 0, data.Length);
 
                         ReadAsync();
-                        OnPacket(Serializer.Deserialize(data));
+                        OnPacket(serializer.Deserialize(data));
                     }
                 }
             }
@@ -146,10 +136,10 @@ namespace NGTNetwork
         }
     }
 
-    public abstract class TcpServerSession<ISerializer>
-        : TcpSession<ISerializer>, ServerSession
-        where ISerializer : Serializer
+    public abstract class TcpServerSession : TcpSession, IServerSession
     {
+        public TcpServerSession(TcpClient client, Serializer serializer) : base(client, serializer) { }
+
         public void Accept()
         {
             OnAccept();
@@ -158,25 +148,20 @@ namespace NGTNetwork
         protected abstract void OnAccept();
     }
 
-    public abstract class TcpClientSession<ISerializer>
-        : TcpSession<ISerializer>, ClientSession
-        where ISerializer : Serializer
+    public abstract class TcpClientSession : TcpSession, IClientSession
     {
-        public TcpClientSession() : base()
-        {
-            Client = new TcpClient();
-        }
+        public TcpClientSession(Serializer serializer) : base(new TcpClient(), serializer) { }
 
         public void Connect(string hostname, int port)
         {
-            Client.Connect(hostname, port);
+            client.Connect(hostname, port);
             OnConnect();
             Task.Run(() => ReadAsync());
         }
 
         public async void ConnectAsync(string host, int port)
         {
-            await Client.ConnectAsync(host, port);
+            await client.ConnectAsync(host, port);
             OnConnect();
             Task t = Task.Run(() => ReadAsync());
         }

@@ -40,9 +40,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ChatClientSession.cs" />
+    <Compile Include="ChatProtoClientSession.cs" />
+    <Compile Include="ChatProtoNetworkSerializer.cs" />
     <Compile Include="ChatProtoPacket.cs" />
-    <Compile Include="ChatServerSession.cs" />
+    <Compile Include="ChatProtoServerSession.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

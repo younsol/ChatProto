@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Threading;
 
-using ChatServerListener = NGTNetwork.TcpSocketListener<ChatProto.User, NGTNetwork.NetworkSerializer>;
+using NGTNetwork;
 
 namespace ChatProto
 {
+    using ChatProtoServerListener = TcpSocketListener<User>;
 
     class ChatProtoServer
     {
         static void Main(string[] args)
         {
-            ChatServerListener listener = new ChatServerListener();
-            listener.StartListeningAsync();
+            ChatProtoServerListener listener = new ChatProtoServerListener();
+            listener.StartListeningAsync(client => new User(client));
             Console.WriteLine("Start Listen!!");
             while(true)
             {

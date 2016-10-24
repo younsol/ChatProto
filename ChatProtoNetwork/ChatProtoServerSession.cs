@@ -1,15 +1,13 @@
-﻿using NGTNetwork;
-using NGTUtil;
-using System;
+﻿using System;
+using System.Net.Sockets;
+
+using NGTNetwork;
 
 namespace ChatProtoNetwork
 {
-    public abstract class ChatServerSession : TcpServerSession<NetworkSerializer>
+    public abstract class ChatProtoServerSession : TcpServerSession
     {
-        public ChatServerSession() : base()
-        {
-            Serializer = NetworkSerializer.Instance;
-        }
+        public ChatProtoServerSession(TcpClient client) : base(client, ChatProtoNetworkSerializer.Instance) { }
         
         public override void OnPacket(dynamic packet)
         {

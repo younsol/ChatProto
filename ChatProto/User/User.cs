@@ -1,28 +1,33 @@
-﻿using ChatProtoDatabase;
-using ChatProtoDataStruct;
-using ChatProtoNetwork;
-using NGTUtil;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Net.Sockets;
+
+using NGTUtil;
+
+using ChatProtoDatabase;
+using ChatProtoDataStruct;
+using ChatProtoNetwork;
 
 namespace ChatProto
 {
-    public class User : ChatServerSession
+    public class User : ChatProtoServerSession
     {
-        public static ConcurrentDictionary<ulong, User> SessionContainer = new ConcurrentDictionary<ulong, User>();
+        public static ConcurrentDictionary<int, User> SessionContainer = new ConcurrentDictionary<int, User>();
         public static ConcurrentDictionary<long, User> UserContainer = new ConcurrentDictionary<long, User>();
         private ConcurrentDictionary<long, ChatRoom> JoinedChatRooms = new ConcurrentDictionary<long, ChatRoom>();
 
         public UserInfo UserInfo { get; set; }
-        
+
+        public User(TcpClient client) : base(client) { }
+
         protected override void OnAccept()
         {
-            if (!SessionContainer.TryAdd(Index ?? 0, this))
+            if (!SessionContainer.TryAdd(Index, this))
             {
-                Console.WriteLine($"Fatal Error occured on Adding Session!! [SessionIndex: {Index ?? 0}]");
+                Console.WriteLine($"Fatal Error occured on Adding Session!! [SessionIndex: {Index}]");
             }
         }
 
@@ -35,9 +40,9 @@ namespace ChatProto
             JoinedChatRooms.Clear();
 
             User user;
-            if (!SessionContainer.TryRemove(Index ?? 0, out user) || this != user)
+            if (!SessionContainer.TryRemove(Index, out user) || this != user)
             {
-                Console.WriteLine($"Fatal Error occured on Removing Session!! [SessionIndex: {Index ?? 0}]");
+                Console.WriteLine($"Fatal Error occured on Removing Session!! [SessionIndex: {Index}]");
             }
 
             if (UserInfo != null && (!UserContainer.TryRemove(UserInfo.UserId, out user) || this != user))

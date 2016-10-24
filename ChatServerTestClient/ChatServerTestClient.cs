@@ -1,12 +1,14 @@
-﻿using ChatProtoDataStruct;
-using ChatProtoNetwork;
-using NGTUtil;
-using System;
+﻿using System;
 using System.Threading;
+
+using NGTUtil;
+
+using ChatProtoDataStruct;
+using ChatProtoNetwork;
 
 namespace ChatServerTestClient
 {
-    public class Connection : ChatClientSession
+    public class Connection : ChatProtoClientSession
     {
         protected override void OnClose()
         {

@@ -1,8 +1,7 @@
 ﻿using System;
-
-using NGTNetwork;
-using ChatProtoDataStruct;
 using System.Collections.Generic;
+
+using ChatProtoDataStruct;
 
 namespace ChatProtoNetwork
 {
