@@ -36,7 +36,9 @@ namespace NGTUtil
         public static string GetObjectContent(object obj)
         {
             if (obj == null)
+            {
                 return "null";
+            }
 
             if (obj.GetType().IsPrimitive)
             {

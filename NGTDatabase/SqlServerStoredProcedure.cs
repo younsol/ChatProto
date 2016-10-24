@@ -11,9 +11,9 @@ namespace NGTSqlServer
     {
         public IList<TResult> Result { get; private set; }
 
-        private static PropertyInfo[] reflection = SetReflection();
+        private static PropertyInfo[] propertyInfos = SetPropertyInfos();
 
-        private static PropertyInfo[] SetReflection()
+        private static PropertyInfo[] SetPropertyInfos()
         {
             return typeof(TResult).GetProperties()
                 .Where(pi => pi.PropertyType.IsPrimitive ||
@@ -31,11 +31,11 @@ namespace NGTSqlServer
                 foreach (DataRow row in dataTable.Rows)
                 {
                     var item = new TResult();
-                    foreach (PropertyInfo pi in reflection)
+                    foreach (PropertyInfo propertyInfo in propertyInfos)
                     {
-                        if (dataTable.Columns.Contains(pi.Name))
+                        if (dataTable.Columns.Contains(propertyInfo.Name))
                         {
-                            pi.SetValue(item, row[pi.Name]);
+                            propertyInfo.SetValue(item, row[propertyInfo.Name]);
                         }
                     }
                     result.Add(item);
