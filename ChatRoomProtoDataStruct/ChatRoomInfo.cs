@@ -8,6 +8,11 @@ namespace ChatProtoDataStruct
         public long ChatRoomId { get; set; }
         public string Title { get; set; }
 
-        public object Clone() { return MemberwiseClone(); }
+        public object Clone()
+        {
+            var cloned = MemberwiseClone() as ChatRoomInfo;
+            cloned.Title = cloned.Title as string;
+            return cloned;
+        }
     }
 }

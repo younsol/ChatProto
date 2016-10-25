@@ -11,6 +11,12 @@ namespace ChatProtoDataStruct
         public string ChatText { get; set; }
         public DateTime ChatTime { get; set; }
 
-        public object Clone() { return MemberwiseClone(); }
+        public object Clone()
+        {
+            var cloned = MemberwiseClone() as ChatInfo;
+            cloned.ChatText = cloned.ChatText.Clone() as string;
+            cloned.ChatTime = new DateTime(cloned.ChatTime.Ticks);
+            return cloned;
+        }
     }
 }
