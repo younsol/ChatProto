@@ -11,7 +11,7 @@ namespace ChatProtoDataStruct
         public object Clone()
         {
             var cloned = MemberwiseClone() as ChatRoomInfo;
-            cloned.Title = cloned.Title as string;
+            cloned.Title = cloned.Title.Clone() as string;
             return cloned;
         }
     }
