@@ -275,7 +275,7 @@ namespace ChatProto
             }
         }
 
-        protected override void HandlePacket(CQ_ChatRoomLeave packet)
+        protected override async void HandlePacket(CQ_ChatRoomLeave packet)
         {
             var response = new SA_ChatRoomLeave();
             response.Result = -1;
@@ -288,7 +288,9 @@ namespace ChatProto
 
             try
             {
-                var chatRoom = ChatRoom.Leave(this, packet.ChatRoomId);
+                var chatRoomLeave = ChatRoom.Leave(this, packet.ChatRoomId);
+                await chatRoomLeave;
+                var chatRoom = chatRoomLeave.Result;
                 JoinedChatRooms.TryRemove(chatRoom.ChatRoomInfo.ChatRoomId, out chatRoom);
                 response.ChatRoomInfo = chatRoom.ChatRoomInfo;
                 response.Result = 0;

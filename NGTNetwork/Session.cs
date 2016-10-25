@@ -107,25 +107,26 @@ namespace NGTNetwork
             byte[] dataLengthData = new byte[4];
             try
             {
-                await client.GetStream().ReadAsync(dataLengthData, 0, 4);
-                if (!client.Connected)
+                while (true)
                 {
-                    Close();
-                }
-                else
-                {
-                    int dataLength = BitConverter.ToInt32(dataLengthData, 0);
-                    if (dataLength == 0)
+                    await client.GetStream().ReadAsync(dataLengthData, 0, 4);
+                    if (!client.Connected)
                     {
-                        Close();
+                        throw new Exception("Connection Closed!");
                     }
                     else
                     {
-                        byte[] data = new byte[dataLength];
-                        client.GetStream().Read(data, 0, data.Length);
-
-                        ReadAsync();
-                        OnPacket(serializer.Deserialize(data));
+                        int dataLength = BitConverter.ToInt32(dataLengthData, 0);
+                        if (dataLength == 0)
+                        {
+                            throw new Exception("Unexpected DataLength!");
+                        }
+                        else
+                        {
+                            byte[] data = new byte[dataLength];
+                            await client.GetStream().ReadAsync(data, 0, data.Length);
+                            OnPacket(serializer.Deserialize(data));
+                        }
                     }
                 }
             }

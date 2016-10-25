@@ -37,7 +37,7 @@ namespace ChatProto
             return chatRoom;
         }
 
-        public static ChatRoom Leave(User user, long chatRoomId)
+        public static async Task<ChatRoom> Leave(User user, long chatRoomId)
         {
             ChatRoom chatRoom;
             if (!Container.TryGetValue(chatRoomId, out chatRoom))
@@ -46,7 +46,7 @@ namespace ChatProto
             }
 
             chatRoom.RemoveSubscriber(user);
-            chatRoom.RemoveMember(user.UserInfo);
+            await chatRoom.RemoveMember(user.UserInfo);
             return chatRoom;
         }
 
@@ -97,8 +97,8 @@ namespace ChatProto
                 chatRoom = new ChatRoom
                 {
                     ChatRoomInfo = chatRoomInquiryResult,
-                    Members = new ConcurrentBag<UserInfo>(),
-                    Subscribers = new ConcurrentBag<User>(),
+                    Members = new ConcurrentDictionary<long, UserInfo>(),
+                    Subscribers = new ConcurrentDictionary<long, User>(),
                     ChatHistory = new ConcurrentDictionary<long, ChatInfo>()
                 };
             }
@@ -109,7 +109,7 @@ namespace ChatProto
                 await chatRoomUserInquiryExecute;
                 foreach (var userInfo in chatRoomUserInquiry.Result)
                 {
-                    chatRoom.Members.Add(userInfo);
+                    chatRoom.Members.TryAdd(userInfo.UserId, userInfo);
                 }
             }
 
@@ -126,27 +126,28 @@ namespace ChatProto
         }
 
         public ChatRoomInfo ChatRoomInfo { get; set; }
-        private ConcurrentBag<UserInfo> Members { get; set; }
-        private ConcurrentBag<User> Subscribers { get; set; }
+        private ConcurrentDictionary<long, UserInfo> Members { get; set; }
+        private ConcurrentDictionary<long, User> Subscribers { get; set; }
         private ConcurrentDictionary<long, ChatInfo> ChatHistory { get; set; }
 
-        private void AddSubscriber(User user)
+        private bool AddSubscriber(User user)
         {
-            Subscribers.Add(user);
+            return Subscribers.TryAdd(user.UserInfo.UserId, user);
         }
 
-        private void RemoveSubscriber(User user)
+        private bool RemoveSubscriber(User user)
         {
-            Subscribers.TryTake(out user);
+            bool success = Subscribers.TryRemove(user.UserInfo.UserId, out user);
             if (Subscribers.Count == 0)
             {
                 Dispose();
             }
+            return success;
         }
 
         public List<UserInfo> GetMembers()
         {
-            return Members.ToList();
+            return Members.Select(pair => pair.Value).ToList();
         }
 
         private async Task<bool> AddMember(UserInfo userInfo)
@@ -156,27 +157,18 @@ namespace ChatProto
             {
                 await chatRoomJoinExecute;
                 var chatRoomJoinResult = chatRoomJoin.Result.First();
-                if (chatRoomJoinResult == null || chatRoomJoinResult.Result < 0 )
-                {
-                    return false;
-                }
-                Members.Add(userInfo);
-                return true;
+                return (chatRoomJoinResult == null || chatRoomJoinResult.Result < 0) && Members.TryAdd(userInfo.UserId, userInfo);
             }
         }
 
-        private async void RemoveMember(UserInfo userInfo)
+        private async Task<bool> RemoveMember(UserInfo userInfo)
         {
             using (var chatRoomLeave = new ChatRoomLeave { ChatRoomId = ChatRoomInfo.ChatRoomId, UserId = userInfo.UserId })
             using (var chatRoomLeaveExecute = chatRoomLeave.ExecuteAsync(ChatProtoSqlServer.Instance))
             {
                 await chatRoomLeaveExecute;
                 var chatRoomLeaveResult = chatRoomLeave.Result.FirstOrDefault();
-                if (chatRoomLeaveResult == null || chatRoomLeaveResult.Result < 0)
-                {
-                    return;
-                }
-                Members.TryTake(out userInfo);
+                return (chatRoomLeaveResult == null || chatRoomLeaveResult.Result < 0) && Members.TryRemove(userInfo.UserId, out userInfo);
             }
         }
 
@@ -195,9 +187,9 @@ namespace ChatProto
                 {
                     ChatHistory.TryAdd(chatInfo.ChatId, chatInfo);
                     var noti = new SN_Chat { ChatInfo = chatInfo };
-                    foreach (var subscriber in Subscribers)
+                    foreach (var pair in Subscribers)
                     {
-                        subscriber.Send(noti);
+                        pair.Value.Send(noti);
                     }
                 }
             }
