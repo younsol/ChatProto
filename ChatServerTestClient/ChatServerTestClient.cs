@@ -36,53 +36,54 @@ namespace ChatServerTestClient
             }
         }
 
-        protected override void HandlePacket(SN_UserChatRoomInfoList packet)
+
+        protected void HandlePacket(SN_UserChatRoomInfoList packet)
         {
         }
 
-        protected override void HandlePacket(SA_ChatRoomCreate packet)
+        protected void HandlePacket(SA_ChatRoomCreate packet)
         {
         }
 
-        protected override void HandlePacket(SN_ChatRoomJoin packet)
+        protected void HandlePacket(SN_ChatRoomJoin packet)
         {
         }
 
-        protected override void HandlePacket(SN_ChatRoomLeave packet)
+        protected void HandlePacket(SN_ChatRoomLeave packet)
         {
         }
 
-        protected override void HandlePacket(SA_ChatInfoHistory packet)
+        protected void HandlePacket(SA_ChatInfoHistory packet)
         {
         }
 
-        protected override void HandlePacket(SN_Chat packet)
+        protected void HandlePacket(SN_Chat packet)
         {
         }
 
-        protected override void HandlePacket(SA_ChatRoomInfo packet)
+        protected void HandlePacket(SA_ChatRoomInfo packet)
         {
         }
 
-        protected override void HandlePacket(SA_ChatRoomLeave packet)
+        protected void HandlePacket(SA_ChatRoomLeave packet)
         {
         }
 
-        protected override void HandlePacket(SA_ChatRoomJoin packet)
+        protected void HandlePacket(SA_ChatRoomJoin packet)
         {
         }
 
-        protected override void HandlePacket(SA_ChatRoomInfoList packet)
+        protected void HandlePacket(SA_ChatRoomInfoList packet)
         {
         }
 
-        protected override void HandlePacket(SA_UserSignIn packet)
+        protected void HandlePacket(SA_UserSignIn packet)
         {
             if (packet.Result == 0)
                 ChatServerTestClient.UserInfo = packet.UserInfo;
         }
 
-        protected override void HandlePacket(SA_UserSignUp packet)
+        protected void HandlePacket(SA_UserSignUp packet)
         {
         }
 

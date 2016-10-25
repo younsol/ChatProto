@@ -51,7 +51,20 @@ namespace ChatProto
             }
         }
 
-        protected override async void HandlePacket(CQ_UserSignUp packet)
+        public override void OnPacket(dynamic packet)
+        {
+            try
+            {
+                HandlePacket(packet);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Cannot Handle Packet! {packet}");
+                Console.WriteLine(e.StackTrace);
+            }
+        }
+
+        protected async void HandlePacket(CQ_UserSignUp packet)
         {
             var response = new SA_UserSignUp();
             response.Result = -1;
@@ -87,7 +100,7 @@ namespace ChatProto
             Send(response);
         }
 
-        protected override async void HandlePacket(CQ_UserSignIn packet)
+        protected async void HandlePacket(CQ_UserSignIn packet)
         {
             var response = new SA_UserSignIn();
             response.Result = -1;
@@ -152,7 +165,7 @@ namespace ChatProto
             }
         }
 
-        protected override void HandlePacket(CN_UserChatRoomInfoList packet)
+        protected void HandlePacket(CN_UserChatRoomInfoList packet)
         {
             if (UserInfo == null)
             {
@@ -173,7 +186,7 @@ namespace ChatProto
             }
         }
 
-        protected override async void HandlePacket(CQ_ChatRoomInfoList packet)
+        protected async void HandlePacket(CQ_ChatRoomInfoList packet)
         {
             var response = new SA_ChatRoomInfoList();
             response.Result = -1;
@@ -209,7 +222,7 @@ namespace ChatProto
             Send(response);
         }
 
-        protected override async void HandlePacket(CQ_ChatRoomCreate packet)
+        protected async void HandlePacket(CQ_ChatRoomCreate packet)
         {
             var response = new SA_ChatRoomCreate();
             response.Result = -1;
@@ -246,7 +259,7 @@ namespace ChatProto
             }
         }
 
-        protected override async void HandlePacket(CQ_ChatRoomJoin packet)
+        protected async void HandlePacket(CQ_ChatRoomJoin packet)
         {
             var response = new SA_ChatRoomJoin();
             response.Result = -1;
@@ -275,7 +288,7 @@ namespace ChatProto
             }
         }
 
-        protected override async void HandlePacket(CQ_ChatRoomLeave packet)
+        protected async void HandlePacket(CQ_ChatRoomLeave packet)
         {
             var response = new SA_ChatRoomLeave();
             response.Result = -1;
@@ -305,7 +318,7 @@ namespace ChatProto
             }
         }
 
-        protected override void HandlePacket(CQ_ChatRoomInfo packet)
+        protected void HandlePacket(CQ_ChatRoomInfo packet)
         {
             var response = new SA_ChatRoomInfo();
             response.Result = -1;
@@ -339,7 +352,7 @@ namespace ChatProto
             }
         }
 
-        protected override void HandlePacket(CQ_ChatInfoHistory packet)
+        protected void HandlePacket(CQ_ChatInfoHistory packet)
         {
             var response = new SA_ChatInfoHistory();
             response.ChatRoomId = packet.ChatRoomId;
@@ -371,7 +384,7 @@ namespace ChatProto
             }
         }
 
-        protected override void HandlePacket(CN_Chat packet)
+        protected void HandlePacket(CN_Chat packet)
         {
             if (UserInfo == null)
             {
