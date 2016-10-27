@@ -6,136 +6,136 @@ using ChatProtoDataStruct;
 namespace ChatProtoNetwork
 {
     [Serializable]
-    public abstract class AnswerPacket
+    public abstract class ResponsePacket
     {
         public int Result { get; set; }
     }
 
     [Serializable]
-    public class CQ_UserSignUp
+    public class UserSignUpRequest
     {
         public string Nickname { get; set; }
         public string Password { get; set; }
     }
     [Serializable]
-    public class SA_UserSignUp : AnswerPacket
+    public class UserSignUpResponse : ResponsePacket
     {
         public UserInfo UserInfo { get; set; }
     }
 
     [Serializable]
-    public class CQ_UserSignIn
+    public class UserSignInRequest
     {
         public string Nickname { get; set; }
         public string Password { get; set; }
     }
     [Serializable]
-    public class SA_UserSignIn : AnswerPacket
+    public class UserSignInResponse : ResponsePacket
     {
         public UserInfo UserInfo { get; set; }
     }
 
     [Serializable]
-    public class CN_UserChatRoomInfoList { }
+    public class UserChatRoomInfoListNotifyRequest { }
     [Serializable]
-    public class SN_UserChatRoomInfoList 
+    public class UserChatRoomInfoListNotify
     {
         public List<ChatRoomInfo> ChatRoomInfoList { get; set; }
     }
 
     [Serializable]
-    public class CQ_ChatRoomInfoList { }
+    public class ChatRoomInfoListRequest { }
     [Serializable]
-    public class SA_ChatRoomInfoList : AnswerPacket
+    public class ChatRoomInfoListResponse : ResponsePacket
     {
         public List<ChatRoomInfo> ChatRoomInfoList { get; set; }
     }
 
     [Serializable]
-    public class CQ_ChatRoomCreate 
+    public class ChatRoomCreateRequest
     {
         public string Title { get; set; }
     }
 
     [Serializable]
-    public class SA_ChatRoomCreate : AnswerPacket
+    public class ChatRoomCreateResponse : ResponsePacket
     {
         public ChatRoomInfo ChatRoom { get; set; }
     }
 
     [Serializable]
-    public class CQ_ChatRoomJoin 
+    public class ChatRoomJoinRequest
     {
         public long ChatRoomId { get; set; }
     }
 
     [Serializable]
-    public class SA_ChatRoomJoin : AnswerPacket
+    public class ChatRoomJoinResponse : ResponsePacket
     {
         public ChatRoomInfo ChatRoom { get; set; }
     }
 
     [Serializable]
-    public class SN_ChatRoomJoin 
+    public class ChatRoomJoinNotify
     {
         public long ChatRoomId { get; set; }
         public UserInfo User { get; set; }
     }
 
     [Serializable]
-    public class CQ_ChatRoomLeave 
+    public class ChatRoomLeaveRequest
     {
         public long ChatRoomId { get; set; }
     }
 
     [Serializable]
-    public class SA_ChatRoomLeave : AnswerPacket
+    public class ChatRoomLeaveResponse : ResponsePacket
     {
         public ChatRoomInfo ChatRoomInfo { get; set; }
     }
 
     [Serializable]
-    public class SN_ChatRoomLeave 
+    public class ChatRoomLeaveNotify
     {
         public long ChatRoomId { get; set; }
         public UserInfo UserInfo { get; set; }
     }
 
     [Serializable]
-    public class CQ_ChatRoomInfo 
+    public class ChatRoomInfoRequest
     {
         public long ChatRoomId { get; set; }
     }
 
     [Serializable]
-    public class SA_ChatRoomInfo : AnswerPacket
+    public class ChatRoomInfoResponse : ResponsePacket
     {
         public ChatRoomInfo ChatRoomInfo { get; set; }
         public List<UserInfo> ChatRoomUserInfoList { get; set; }
     }
 
     [Serializable]
-    public class CQ_ChatInfoHistory 
+    public class ChatInfoHistoryRequest
     {
         public long ChatRoomId { get; set; }
     }
 
     [Serializable]
-    public class SA_ChatInfoHistory : AnswerPacket
+    public class ChatInfoHistoryResponse : ResponsePacket
     {
         public long ChatRoomId { get; set; }
         public List<ChatInfo> ChatInfoHistory { get; set; }
     }
 
     [Serializable]
-    public class CN_Chat 
+    public class ChatNotifyRequest
     {
         public long ChatRoomId { get; set; }
         public string ChatText { get; set; }
     }
 
     [Serializable]
-    public class SN_Chat 
+    public class ChatNotify
     {
         public ChatInfo ChatInfo { get; set; }
     }

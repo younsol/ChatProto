@@ -10,6 +10,7 @@ using NGTUtil;
 using ChatProtoDatabase;
 using ChatProtoDataStruct;
 using ChatProtoNetwork;
+using System.Threading.Tasks;
 
 namespace ChatProto
 {
@@ -64,14 +65,14 @@ namespace ChatProto
             }
         }
 
-        protected async void HandlePacket(CQ_UserSignUp packet)
+        protected async void HandlePacket(UserSignUpRequest packet)
         {
-            var response = new SA_UserSignUp();
+            var response = new UserSignUpResponse();
             response.Result = -1;
 
             if (UserInfo != null)
             {
-                Send(response);
+                await Send(response);
                 return;
             }
             
@@ -97,17 +98,17 @@ namespace ChatProto
                 return;
             }
 
-            Send(response);
+            await Send(response);
         }
 
-        protected async void HandlePacket(CQ_UserSignIn packet)
+        protected async void HandlePacket(UserSignInRequest packet)
         {
-            var response = new SA_UserSignIn();
+            var response = new UserSignInResponse();
             response.Result = -1;
 
             if (UserInfo != null)
             {
-                Send(response);
+                await Send(response);
                 return;
             }
 
@@ -127,7 +128,7 @@ namespace ChatProto
                     response.UserInfo = UserInfo.Clone() as UserInfo;
                 }
 
-                var noti = new SN_UserChatRoomInfoList();
+                var noti = new UserChatRoomInfoListNotify();
 
                 using (var userChatRoomListInquiry = new UserChatRoomListInquiry { UserId = UserInfo.UserId })
                 using (var userChatRoomListInquiryExecute = userChatRoomListInquiry.ExecuteAsync(ChatProtoSqlServer.Instance))
@@ -145,7 +146,7 @@ namespace ChatProto
                         JoinedChatRooms.TryAdd(subscribeChatRoom.Result.ChatRoomInfo.ChatRoomId, subscribeChatRoom.Result);
                         noti.ChatRoomInfoList.Add(subscribeChatRoom.Result.ChatRoomInfo.Clone() as ChatRoomInfo);
                     }
-                    Send(noti);
+                    await Send(noti);
                 }
 
 
@@ -155,7 +156,7 @@ namespace ChatProto
                 }
 
                 response.Result = 0;
-                Send(response);
+                await Send(response);
             }
             catch (Exception e)
             {
@@ -165,7 +166,7 @@ namespace ChatProto
             }
         }
 
-        protected void HandlePacket(CN_UserChatRoomInfoList packet)
+        protected async void HandlePacket(UserChatRoomInfoListNotifyRequest packet)
         {
             if (UserInfo == null)
             {
@@ -174,9 +175,9 @@ namespace ChatProto
 
             try
             {
-                var noti = new SN_UserChatRoomInfoList();
+                var noti = new UserChatRoomInfoListNotify();
                 noti.ChatRoomInfoList = JoinedChatRooms.Select(pair => pair.Value.ChatRoomInfo).ToList();
-                Send(noti);
+                await Send(noti);
             }
             catch(Exception e)
             {
@@ -186,14 +187,14 @@ namespace ChatProto
             }
         }
 
-        protected async void HandlePacket(CQ_ChatRoomInfoList packet)
+        protected async void HandlePacket(ChatRoomInfoListRequest packet)
         {
-            var response = new SA_ChatRoomInfoList();
+            var response = new ChatRoomInfoListResponse();
             response.Result = -1;
 
             if (UserInfo == null)
             {
-                Send(response);
+                await Send(response);
                 return;
             }
 
@@ -219,17 +220,17 @@ namespace ChatProto
                 return;
             }
 
-            Send(response);
+            await Send(response);
         }
 
-        protected async void HandlePacket(CQ_ChatRoomCreate packet)
+        protected async void HandlePacket(ChatRoomCreateRequest packet)
         {
-            var response = new SA_ChatRoomCreate();
+            var response = new ChatRoomCreateResponse();
             response.Result = -1;
 
             if (UserInfo == null)
             {
-                Send(response);
+                await Send(response);
                 return;
             }
 
@@ -255,18 +256,18 @@ namespace ChatProto
             }
             finally
             {
-                Send(response);
+                await Send(response);
             }
         }
 
-        protected async void HandlePacket(CQ_ChatRoomJoin packet)
+        protected async void HandlePacket(ChatRoomJoinRequest packet)
         {
-            var response = new SA_ChatRoomJoin();
+            var response = new ChatRoomJoinResponse();
             response.Result = -1;
 
             if (UserInfo == null)
             {
-                Send(response);
+                Task send = Send(response);
                 return;
             }
 
@@ -284,18 +285,18 @@ namespace ChatProto
             }
             finally
             {
-                Send(response);
+                await Send(response);
             }
         }
 
-        protected async void HandlePacket(CQ_ChatRoomLeave packet)
+        protected async void HandlePacket(ChatRoomLeaveRequest packet)
         {
-            var response = new SA_ChatRoomLeave();
+            var response = new ChatRoomLeaveResponse();
             response.Result = -1;
 
             if (UserInfo == null)
             {
-                Send(response);
+                await Send(response);
                 return;
             }
 
@@ -314,13 +315,13 @@ namespace ChatProto
             }
             finally
             {
-                Send(response);
+                await Send(response);
             }
         }
 
-        protected void HandlePacket(CQ_ChatRoomInfo packet)
+        protected void HandlePacket(ChatRoomInfoRequest packet)
         {
-            var response = new SA_ChatRoomInfo();
+            var response = new ChatRoomInfoResponse();
             response.Result = -1;
             
             if (UserInfo == null)
@@ -352,9 +353,9 @@ namespace ChatProto
             }
         }
 
-        protected void HandlePacket(CQ_ChatInfoHistory packet)
+        protected void HandlePacket(ChatInfoHistoryRequest packet)
         {
-            var response = new SA_ChatInfoHistory();
+            var response = new ChatInfoHistoryResponse();
             response.ChatRoomId = packet.ChatRoomId;
             response.Result = -1;
 
@@ -384,7 +385,7 @@ namespace ChatProto
             }
         }
 
-        protected void HandlePacket(CN_Chat packet)
+        protected void HandlePacket(ChatNotifyRequest packet)
         {
             if (UserInfo == null)
             {
@@ -399,7 +400,7 @@ namespace ChatProto
                     throw new Exception("Cannot Find Joined Chat Room!!");
                 }
 
-                var noti = new SN_Chat();
+                var noti = new ChatNotify();
                 targetChatRoom.Broadcast(this, packet.ChatText);
             }
             catch (Exception e)

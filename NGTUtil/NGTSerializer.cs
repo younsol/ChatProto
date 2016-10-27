@@ -5,7 +5,7 @@ namespace NGTUtil
 {
     public abstract class Serializer
     {
-        public byte[] Serialize(object obj)
+        public virtual byte[] Serialize(object obj)
         {
             using (var ms = new MemoryStream())
             {
@@ -15,7 +15,7 @@ namespace NGTUtil
             }
         }
 
-        public object Deserialize(byte[] data)
+        public virtual object Deserialize(byte[] data)
         {
             using (var ms = new MemoryStream(data))
             {

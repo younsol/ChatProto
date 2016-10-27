@@ -10,7 +10,7 @@ namespace NGTNetwork
 {
     public interface ISession
     {
-        bool Send(object obj);
+        Task<bool> Send(object obj);
         void Close();
         void OnPacket(dynamic packet);
     }
@@ -38,7 +38,7 @@ namespace NGTNetwork
             this.serializer = serializer;
         }
 
-        public abstract bool Send(object obj);
+        public abstract Task<bool> Send(object obj);
         public abstract void Close();
         protected abstract void OnClose();
         public abstract void OnPacket(dynamic packet);
@@ -57,9 +57,13 @@ namespace NGTNetwork
 
         // connection이 끊겼거나, Serialize 실패했을 때에만
         // Synced로 false가 return 된다.
-        public override bool Send(object packet)
+        public override async Task<bool> Send(object packet)
         {
-            return WriteAsync(serializer.Serialize(packet)).Result;
+            var data = serializer.Serialize(packet);
+            if (data == null)
+                return false;
+
+            return await WriteAsync(data);
         }
 
         public override void Close()

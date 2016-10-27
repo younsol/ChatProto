@@ -186,10 +186,10 @@ namespace ChatProto
                 foreach (var chatInfo in chatCreate.Result)
                 {
                     ChatHistory.TryAdd(chatInfo.ChatId, chatInfo);
-                    var noti = new SN_Chat { ChatInfo = chatInfo };
+                    var noti = new ChatNotify { ChatInfo = chatInfo };
                     foreach (var pair in Subscribers)
                     {
-                        pair.Value.Send(noti);
+                        await pair.Value.Send(noti);
                     }
                 }
             }

@@ -68,8 +68,8 @@ namespace NGTUtil
             }
             else
             {
-                var reflection = obj.GetType().GetProperties();
-                foreach (PropertyInfo pi in reflection)
+                var properties = obj.GetType().GetProperties();
+                foreach (PropertyInfo pi in properties)
                 {
                     sb.Append($"[{pi.Name}:{GetObjectContent(pi.GetValue(obj, null))}]{Environment.NewLine}");
                 }
