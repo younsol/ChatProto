@@ -36,18 +36,13 @@ namespace ChatServerTestClient
                     pi.SetValue(obj, Convert.ChangeType(tokens[++count], pi.PropertyType));
                 }
 
-                return ChatProtoNetworkSerializer.Instance.Serialize(obj);
+                return base.Serialize(obj);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.StackTrace);
             }
             return null;
-        }
-
-        public override object Deserialize(byte[] data)
-        {
-            return StaticUtility.GetObjectContent(ChatProtoNetworkSerializer.Instance.Deserialize(data));
-        }
+        }        
     }
 }

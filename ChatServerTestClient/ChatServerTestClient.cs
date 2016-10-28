@@ -3,6 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using ChatProtoNetwork;
+using NGTUtil;
+using ChatProtoDataStruct;
 
 namespace ChatServerTestClient
 {
@@ -25,12 +27,20 @@ namespace ChatServerTestClient
         {
             try
             {
-                Console.WriteLine($"Recv>> {packet as string}");
+                Console.WriteLine($"Recv>> {StaticUtility.GetObjectContent(packet)}");
+                HandlePacket(packet);
+                ChatServerTestClient.Prompt();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Console.WriteLine(e.StackTrace);
+                Console.WriteLine($"Error On HandlePacket! {packet}");
+                //Console.WriteLine(e.StackTrace);
             }
+        }
+
+        private void HandlePacket(SignInResponse packet)
+        {
+            ChatServerTestClient.UserInfo = packet.UserInfo;
         }
     }
 
@@ -39,6 +49,7 @@ namespace ChatServerTestClient
         private string Host { get; set; }
         private int Port { get; set; }
         public Connection Connection { get; set; }
+        public static UserInfo UserInfo { get; set; }
 
         private ChatServerTestClient(string host, int port)
         {
@@ -94,6 +105,11 @@ namespace ChatServerTestClient
             }
         }
 
+        public static void Prompt()
+        {
+            Console.Write($"{UserInfo?.Nickname}>>");
+        }
+
         static void Main(string[] args)
         {
             ChatServerTestClient client = new ChatServerTestClient("localhost", 11000);
@@ -102,7 +118,7 @@ namespace ChatServerTestClient
             {
                 try
                 {
-                    Console.Write($">>");
+                    Prompt();
                     var command = Console.ReadLine();
                     if (DoCustomCommand(command))
                     {
