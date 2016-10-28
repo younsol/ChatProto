@@ -12,33 +12,33 @@ namespace ChatProtoNetwork
     }
 
     [Serializable]
-    public class UserSignUpRequest
+    public class SignUpRequest
     {
         public string Nickname { get; set; }
         public string Password { get; set; }
     }
     [Serializable]
-    public class UserSignUpResponse : ResponsePacket
+    public class SignUpResponse : ResponsePacket
     {
         public UserInfo UserInfo { get; set; }
     }
 
     [Serializable]
-    public class UserSignInRequest
+    public class SignInRequest
     {
         public string Nickname { get; set; }
         public string Password { get; set; }
     }
     [Serializable]
-    public class UserSignInResponse : ResponsePacket
+    public class SignInResponse : ResponsePacket
     {
         public UserInfo UserInfo { get; set; }
     }
 
     [Serializable]
-    public class UserChatRoomInfoListNotifyRequest { }
+    public class UserChatRoomInfoListRequest { }
     [Serializable]
-    public class UserChatRoomInfoListNotify
+    public class UserChatRoomInfoList
     {
         public List<ChatRoomInfo> ChatRoomInfoList { get; set; }
     }
@@ -128,14 +128,14 @@ namespace ChatProtoNetwork
     }
 
     [Serializable]
-    public class ChatNotifyRequest
+    public class ChatRequest
     {
         public long ChatRoomId { get; set; }
         public string ChatText { get; set; }
     }
 
     [Serializable]
-    public class ChatNotify
+    public class Chat
     {
         public ChatInfo ChatInfo { get; set; }
     }

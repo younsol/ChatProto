@@ -186,7 +186,7 @@ namespace ChatProto
                 foreach (var chatInfo in chatCreate.Result)
                 {
                     ChatHistory.TryAdd(chatInfo.ChatId, chatInfo);
-                    var noti = new ChatNotify { ChatInfo = chatInfo };
+                    var noti = new ChatProtoNetwork.Chat { ChatInfo = chatInfo };
                     foreach (var pair in Subscribers)
                     {
                         await pair.Value.Send(noti);

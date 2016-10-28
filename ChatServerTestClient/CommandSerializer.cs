@@ -17,7 +17,7 @@ namespace ChatServerTestClient
                 return null;
             try
             {
-                var packetType = Type.GetType($"ChatProtoNetwork.{tokens[0]}, ChatProtoNetwork");
+                var packetType = Type.GetType($"ChatProtoNetwork.{tokens[0]}Request, ChatProtoNetwork");
                 if (packetType == null)
                     return null;
 

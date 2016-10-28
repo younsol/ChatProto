@@ -65,9 +65,9 @@ namespace ChatProto
             }
         }
 
-        protected async void HandlePacket(UserSignUpRequest packet)
+        protected async void HandlePacket(SignUpRequest packet)
         {
-            var response = new UserSignUpResponse();
+            var response = new SignUpResponse();
             response.Result = -1;
 
             if (UserInfo != null)
@@ -101,9 +101,9 @@ namespace ChatProto
             await Send(response);
         }
 
-        protected async void HandlePacket(UserSignInRequest packet)
+        protected async void HandlePacket(SignInRequest packet)
         {
-            var response = new UserSignInResponse();
+            var response = new SignInResponse();
             response.Result = -1;
 
             if (UserInfo != null)
@@ -128,7 +128,7 @@ namespace ChatProto
                     response.UserInfo = UserInfo.Clone() as UserInfo;
                 }
 
-                var noti = new UserChatRoomInfoListNotify();
+                var noti = new UserChatRoomInfoList();
 
                 using (var userChatRoomListInquiry = new UserChatRoomListInquiry { UserId = UserInfo.UserId })
                 using (var userChatRoomListInquiryExecute = userChatRoomListInquiry.ExecuteAsync(ChatProtoSqlServer.Instance))
@@ -166,7 +166,7 @@ namespace ChatProto
             }
         }
 
-        protected async void HandlePacket(UserChatRoomInfoListNotifyRequest packet)
+        protected async void HandlePacket(UserChatRoomInfoListRequest packet)
         {
             if (UserInfo == null)
             {
@@ -175,7 +175,7 @@ namespace ChatProto
 
             try
             {
-                var noti = new UserChatRoomInfoListNotify();
+                var noti = new UserChatRoomInfoList();
                 noti.ChatRoomInfoList = JoinedChatRooms.Select(pair => pair.Value.ChatRoomInfo).ToList();
                 await Send(noti);
             }
@@ -319,7 +319,7 @@ namespace ChatProto
             }
         }
 
-        protected void HandlePacket(ChatRoomInfoRequest packet)
+        protected async void HandlePacket(ChatRoomInfoRequest packet)
         {
             var response = new ChatRoomInfoResponse();
             response.Result = -1;
@@ -349,11 +349,11 @@ namespace ChatProto
             }
             finally
             {
-                Send(response);
+                await Send(response);
             }
         }
 
-        protected void HandlePacket(ChatInfoHistoryRequest packet)
+        protected async void HandlePacket(ChatInfoHistoryRequest packet)
         {
             var response = new ChatInfoHistoryResponse();
             response.ChatRoomId = packet.ChatRoomId;
@@ -381,11 +381,11 @@ namespace ChatProto
             }
             finally
             {
-                Send(response);
+                await Send(response);
             }
         }
 
-        protected void HandlePacket(ChatNotifyRequest packet)
+        protected void HandlePacket(ChatRequest packet)
         {
             if (UserInfo == null)
             {
@@ -400,7 +400,7 @@ namespace ChatProto
                     throw new Exception("Cannot Find Joined Chat Room!!");
                 }
 
-                var noti = new ChatNotify();
+                var noti = new ChatProtoNetwork.Chat();
                 targetChatRoom.Broadcast(this, packet.ChatText);
             }
             catch (Exception e)
