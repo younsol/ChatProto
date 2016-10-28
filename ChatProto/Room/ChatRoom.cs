@@ -34,6 +34,7 @@ namespace ChatProto
             }
             await chatRoom.AddMember(user.UserInfo);
             chatRoom.AddSubscriber(user);
+            chatRoom.Broadcast(new ChatProtoNetwork.ChatRoomJoin { ChatRoomId = chatRoom.ChatRoomInfo.ChatRoomId, UserInfo = user.UserInfo });
             return chatRoom;
         }
 
@@ -47,6 +48,7 @@ namespace ChatProto
 
             chatRoom.RemoveSubscriber(user);
             await chatRoom.RemoveMember(user.UserInfo);
+            chatRoom.Broadcast(new ChatProtoNetwork.ChatRoomLeave { ChatRoomId = chatRoom.ChatRoomInfo.ChatRoomId, UserInfo = user.UserInfo });
             return chatRoom;
         }
 
@@ -152,7 +154,7 @@ namespace ChatProto
 
         private async Task<bool> AddMember(UserInfo userInfo)
         {
-            using (var chatRoomJoin = new ChatRoomJoin { ChatRoomId = ChatRoomInfo.ChatRoomId, UserId = userInfo.UserId })
+            using (var chatRoomJoin = new ChatProtoDatabase.ChatRoomJoin { ChatRoomId = ChatRoomInfo.ChatRoomId, UserId = userInfo.UserId })
             using (var chatRoomJoinExecute = chatRoomJoin.ExecuteAsync(ChatProtoSqlServer.Instance))
             {
                 await chatRoomJoinExecute;
@@ -163,7 +165,7 @@ namespace ChatProto
 
         private async Task<bool> RemoveMember(UserInfo userInfo)
         {
-            using (var chatRoomLeave = new ChatRoomLeave { ChatRoomId = ChatRoomInfo.ChatRoomId, UserId = userInfo.UserId })
+            using (var chatRoomLeave = new ChatProtoDatabase.ChatRoomLeave { ChatRoomId = ChatRoomInfo.ChatRoomId, UserId = userInfo.UserId })
             using (var chatRoomLeaveExecute = chatRoomLeave.ExecuteAsync(ChatProtoSqlServer.Instance))
             {
                 await chatRoomLeaveExecute;
@@ -172,7 +174,15 @@ namespace ChatProto
             }
         }
 
-        public async void Broadcast(User user, string chatText)
+        public async void Broadcast(object packet)
+        {
+            foreach (var pair in Subscribers)
+            {
+                await pair.Value.Send(packet);
+            }
+        }
+
+        public async void Chat(User user, string chatText)
         {
             using (var chatCreate = new ChatCreate { ChatRoomId = ChatRoomInfo.ChatRoomId, UserId = user.UserInfo.UserId, ChatText = chatText })
             using (var chatCreateExecute = chatCreate.ExecuteAsync(ChatProtoSqlServer.Instance))
@@ -186,11 +196,7 @@ namespace ChatProto
                 foreach (var chatInfo in chatCreate.Result)
                 {
                     ChatHistory.TryAdd(chatInfo.ChatId, chatInfo);
-                    var noti = new ChatProtoNetwork.Chat { ChatInfo = chatInfo };
-                    foreach (var pair in Subscribers)
-                    {
-                        await pair.Value.Send(noti);
-                    }
+                    Broadcast(new ChatProtoNetwork.Chat { ChatInfo = chatInfo });
                 }
             }
         }

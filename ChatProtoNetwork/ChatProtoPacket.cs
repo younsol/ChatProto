@@ -76,10 +76,10 @@ namespace ChatProtoNetwork
     }
 
     [Serializable]
-    public class ChatRoomJoinNotify
+    public class ChatRoomJoin
     {
         public long ChatRoomId { get; set; }
-        public UserInfo User { get; set; }
+        public UserInfo UserInfo { get; set; }
     }
 
     [Serializable]
@@ -95,7 +95,7 @@ namespace ChatProtoNetwork
     }
 
     [Serializable]
-    public class ChatRoomLeaveNotify
+    public class ChatRoomLeave
     {
         public long ChatRoomId { get; set; }
         public UserInfo UserInfo { get; set; }

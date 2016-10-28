@@ -401,7 +401,7 @@ namespace ChatProto
                 }
 
                 var noti = new ChatProtoNetwork.Chat();
-                targetChatRoom.Broadcast(this, packet.ChatText);
+                targetChatRoom.Chat(this, packet.ChatText);
             }
             catch (Exception e)
             {
