@@ -328,7 +328,7 @@ namespace ChatProto
             {
                 response.ChatRoomInfo = new ChatRoomInfo();
                 response.ChatRoomInfo.ChatRoomId = packet.ChatRoomId;
-                Send(response);
+                await Send(response);
                 return;
             }
 
@@ -361,7 +361,7 @@ namespace ChatProto
 
             if (UserInfo == null)
             {
-                Send(response);
+                await Send(response);
                 return;
             }
 

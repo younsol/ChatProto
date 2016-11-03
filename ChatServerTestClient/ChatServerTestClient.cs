@@ -33,7 +33,7 @@ namespace ChatServerTestClient
             }
             catch (Exception)
             {
-                Console.WriteLine($"Error On HandlePacket! {packet}");
+                Console.WriteLine($"HandlePacket Not Implemented (Packet: {packet})");
                 //Console.WriteLine(e.StackTrace);
             }
         }
@@ -41,7 +41,7 @@ namespace ChatServerTestClient
         private void HandlePacket(SignInResponse packet)
         {
             ChatServerTestClient.UserInfo = packet.UserInfo;
-        }
+        }        
     }
 
     class ChatServerTestClient

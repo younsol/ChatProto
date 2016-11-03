@@ -84,25 +84,7 @@ namespace NGTNetwork
             byteArrays[0] = BitConverter.GetBytes(data.Length);
             byteArrays[1] = data;
             byte[] dataWithLengthPrefix = StaticUtility.Combine(byteArrays);
-            int queueCount = 0;
-
-            lock (writeQueue)
-            {
-                writeQueue.Enqueue(dataWithLengthPrefix);
-                queueCount = writeQueue.Count;
-            }
-
-            while (queueCount == 1)
-            {
-                byte[] sendData;
-                writeQueue.TryPeek(out sendData);
-                await client.GetStream().WriteAsync(sendData, 0, sendData.Length);
-                lock (writeQueue)
-                {
-                    writeQueue.TryDequeue(out sendData);
-                    queueCount = writeQueue.Count;
-                }
-            }
+            await client.GetStream().WriteAsync(dataWithLengthPrefix, 0, dataWithLengthPrefix.Length);
             return true;
         }
 
